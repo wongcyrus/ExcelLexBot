@@ -21,14 +21,8 @@ def zip(folders: list, dst):
 if __name__ == '__main__':
     source_bucket = "howwhofeelinvideopackage"
 
-    deployment_steps = {
-        'Package': True,
-        'UploadTemplate': True,
-        'UploadPackage': True
-    }
     print("Copy Cloudformation and Excel")
-    cloudformationFiles = ["lexbot", "codehook", "lex_builder"]
-    list(map(lambda f: copyfile("./cloudformation/" + f + ".yaml", "./deployment/" + f + ".yaml"), cloudformationFiles))
+    copyfile("./cloudformation/lexbot.yaml", "./deployment/lexbot.yaml")
     copyfile("./playground/MakeAppointmentChatBot.xlsx", "./deployment/MakeAppointmentChatBot.xlsx")
 
     print("Create Deployment package.")
@@ -36,22 +30,16 @@ if __name__ == '__main__':
     zip(['.\env\BotBuilder\Lib\site-packages/', './builder'], './deployment/lex_builder_function')
     zip(['.\env\BotBuilder\Lib\site-packages/', './lambda'], './deployment/lambda_function')
 
-    # print("Upload Package")
-    # subprocess.run(
-    #     "aws s3 sync ./deployment/ s3://{0} --endpoint-url http://s3-accelerate.amazonaws.com".format(source_bucket),
-    #     shell=True, check=True)
+    print("Upload Package")
+    subprocess.run(
+        "aws s3 sync ./deployment/ s3://{0} --endpoint-url http://s3-accelerate.amazonaws.com".format(source_bucket),
+        shell=True, check=True)
 
     print("Upload Cloudformation Template")
-    list(map(lambda f: subprocess
-             .run("aws s3 cp ./deployment/{0}.yaml s3://{1} --endpoint-url http://s3-accelerate.amazonaws.com"
-                  .format(f, source_bucket), shell=True, check=True), cloudformationFiles))
+    subprocess.run("aws s3 cp ./deployment/lexbot.yaml s3://{0} --endpoint-url http://s3-accelerate.amazonaws.com"
+                   .format(source_bucket))
 
     print("Transform Stack")
-
-    # list(map(lambda f: subprocess.run(
-    #     "aws cloudformation package --template-file ./deployment/{0}.yaml"
-    #     " --output-template-file lexbot.json --s3-bucket {1}".format(f, source_bucket),
-    #     shell=True, check=True), cloudformationFiles))
 
     subprocess.run(
         "aws cloudformation package --template-file ./deployment/lexbot.yaml"

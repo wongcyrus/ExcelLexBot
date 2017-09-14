@@ -8,26 +8,6 @@ Parameters:
     Type: String
     Default: MakeAppointmentChatBot.xlsx
 Resources:
-
-#  LexBuilder:
-#    DependsOn: CookHook
-#    Type: AWS::CloudFormation::Stack
-#    Properties:
-#      Parameters:
-#        SourceBucket: !Ref SourceBucket
-#        ExcelKey: !Ref ExcelKey
-#        LambdaInvokePermissionAnr: !GetAtt CookHook.Outputs.LambdaInvokePermissionAnr #Ensure Lambda Cook hook is ready!
-#      TemplateURL: !Sub https://s3.amazonaws.com/${SourceBucket}/lex_builder.json
-#
-#  CookHook:
-#    Type: AWS::CloudFormation::Stack
-#    Properties:
-#      Parameters:
-#        SourceBucket: !Ref SourceBucket
-#        ExcelKey: !Ref ExcelKey
-#      TemplateURL: !Sub https://s3.amazonaws.com/${SourceBucket}/codehook.json
-
-
 # custom resource to create Lex component from excel
   LexBuilderCustomReseourcesFunction:
     Type: AWS::Serverless::Function
