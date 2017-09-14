@@ -1,0 +1,49 @@
+{
+  "name": {{ name }},
+  "description": {{ description }},
+  "slots": {{ slots }},
+  "confirmationPrompt": {
+    "maxAttempts": {{maxAttempts}},
+    "messages": [
+      {
+        "content": {{confirmationPrompt}},
+        "contentType": "PlainText"
+      }
+    ]
+  },
+  "rejectionStatement": {
+    "messages": [
+      {
+        "content": {{rejectionStatement}},
+        "contentType": "PlainText"
+      }
+    ]
+  },
+  "sampleUtterances": [
+    {% for value in sampleUtterances %}
+    {{ value }}
+    {%- if not loop.last -%},
+    {%- endif %}
+    {% endfor %}
+  ],
+  {% if dialogCodeHook != None %}
+  "dialogCodeHook":{
+      "uri": {{dialogCodeHook}},
+      "messageVersion": "1.0"
+  },
+  {% endif %}
+  "fulfillmentActivity":
+{% if fulfillmentActivity == "\"ReturnIntent\"" %}
+    {
+      "type": "ReturnIntent"
+    }
+{% else %}
+    {
+      "type": "CodeHook",
+      "codeHook": {
+            "uri": {{fulfillmentActivity}},
+            "messageVersion": "1.0"
+       }
+    }
+{% endif %}
+}

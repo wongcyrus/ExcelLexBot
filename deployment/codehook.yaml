@@ -1,0 +1,45 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  SourceBucket:
+    Type: String
+    Default: howwhofeelinvideopackage
+  ExcelKey:
+    Type: String
+    Default: MakeAppointmentChatBot.xlsx
+Resources:
+ #Define Lambda Code Hook
+  ApponintmemtFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: appointment
+      Description: Schedule a dentist appointment, using Amazon Lex to perform natural language understanding
+      Handler: appointment.lambda_handler
+      Runtime: python3.6
+      MemorySize: 512
+      Timeout: 300
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - AWSLambdaExecute
+        - AWSLambdaBasicExecutionRole
+        - AmazonS3ReadOnlyAccess
+        - AmazonLexRunBotsOnly
+      CodeUri:
+        Bucket: !Ref SourceBucket
+        Key: lambda_function.zip
+
+  LambdaInvokePermission:
+    DependsOn: ApponintmemtFunction
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ApponintmemtFunction
+      Action: lambda:InvokeFunction
+      Principal: lex.amazonaws.com
+      SourceArn: !Sub arn:aws:lex:${AWS::Region}:${AWS::AccountId}:intent:*:*
+
+Outputs:
+  LambdaInvokePermissionAnr:
+    Description: Lambda Invoke Permission
+    Value: !Ref LambdaInvokePermission
+

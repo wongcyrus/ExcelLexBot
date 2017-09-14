@@ -1,0 +1,4 @@
+openpyxl==2.4.8
+boto3==1.4.7
+Jinja2==2.9
+requests==2.18.4

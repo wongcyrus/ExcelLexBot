@@ -1,0 +1,35 @@
+{
+  "name": {{ name }},
+  "description": {{ description }},
+  "intents": [
+    {% for value in intents %}
+    {
+      "intentName": {{ value }},
+      "intentVersion": "$LATEST"
+    }
+    {%- if not loop.last -%},
+    {%- endif %}
+    {% endfor %}
+  ],
+  "locale": "en-US",
+  "abortStatement": {
+    "messages": [
+      {
+        "content": {{ abortStatement }},
+        "contentType": "PlainText"
+      }
+    ]
+  },
+  "clarificationPrompt": {
+    "maxAttempts": 2,
+    "messages": [
+      {
+        "content": {{ clarificationPrompt }},
+        "contentType": "PlainText"
+      }
+    ]
+  },
+  "voiceId": "Salli",
+  "childDirected": false,
+  "idleSessionTTLInSeconds": 600
+}
