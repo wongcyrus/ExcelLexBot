@@ -61,12 +61,6 @@ Resources:
         Bucket:
           Ref: SourceBucket
         Key: lex_builder_function.zip
-      Environment:
-        Variables:
-          ExcelKey:
-            Ref: ExcelKey
-          SourceBucket:
-            Ref: SourceBucket
       Handler: main.lambda_handler
       MemorySize: 512
       Policies:

@@ -1,8 +1,9 @@
+import os
 import subprocess
 import zipfile
 from shutil import copyfile
 
-import os
+from BotBuilder import BotBuilder
 
 
 def zip(folders: list, dst):
@@ -20,15 +21,21 @@ def zip(folders: list, dst):
 
 if __name__ == '__main__':
     source_bucket = "howwhofeelinvideopackage"
-
-    print("Copy Cloudformation and Excel")
-    copyfile("./cloudformation/lexbot.yaml", "./deployment/lexbot.yaml")
-    copyfile("./playground/MakeAppointmentChatBot.xlsx", "./deployment/MakeAppointmentChatBot.xlsx")
-
-    print("Create Deployment package.")
+    aws_account = "894598711988"
     # Please change the virtual environment path.
-    zip(['.\env\BotBuilder\Lib\site-packages/', './builder'], './deployment/lex_builder_function')
-    zip(['.\env\BotBuilder\Lib\site-packages/', './lambda'], './deployment/lambda_function')
+    site_packages = '.\env\BotBuilder\Lib\site-packages/'
+
+    print("Generate Lex Json from Excel")
+    bot_builder = BotBuilder(os.path.join("./playground", "MakeAppointmentChatBot.xlsx"), "./output/lexjson",
+                             "arn:aws:lambda:us-east-1:{0}:function:".format(aws_account))
+    bot_builder.generate_json()
+
+    print("Copy Cloudformation")
+    copyfile("./cloudformation/lexbot.yaml", "./deployment/lexbot.yaml")
+
+    print("Create Deployment packages including Lex Json and dependencies")
+    zip([site_packages, './builder', './output'], './deployment/lex_builder_function')
+    zip([site_packages, './lambda'], './deployment/lambda_function')
 
     print("Upload Package")
     subprocess.run(
@@ -40,7 +47,6 @@ if __name__ == '__main__':
                    .format(source_bucket))
 
     print("Transform Stack")
-
     subprocess.run(
         "aws cloudformation package --template-file ./deployment/lexbot.yaml"
         " --output-template-file lexbot.json --s3-bucket {0}".format(source_bucket),

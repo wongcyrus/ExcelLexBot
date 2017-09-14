@@ -2,8 +2,8 @@ from .ExcelJsonConverterBase import ExcelJsonConverterBase
 
 
 class IntendSlotJsonConverter(ExcelJsonConverterBase):
-    def __init__(self, workbook, output_dir):
-        super(IntendSlotJsonConverter, self).__init__(workbook, output_dir)
+    def __init__(self, workbook, lexjson_dir):
+        super(IntendSlotJsonConverter, self).__init__(workbook, lexjson_dir)
 
     def _generate_intent_slot_json(self, sheet_name: str):
         worksheet = self.wb[sheet_name]

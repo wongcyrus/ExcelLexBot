@@ -26,10 +26,6 @@ Resources:
       CodeUri:
         Bucket: !Ref SourceBucket
         Key: lex_builder_function.zip
-      Environment:
-        Variables:
-          SourceBucket: !Ref SourceBucket
-          ExcelKey: !Ref ExcelKey
 
   LexBuilderCustomReseources:
     Type: Custom::LexBuilder

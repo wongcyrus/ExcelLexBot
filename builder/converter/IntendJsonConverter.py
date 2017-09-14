@@ -5,8 +5,8 @@ from .ExcelJsonConverterBase import ExcelJsonConverterBase
 
 
 class IntendJsonConverter(ExcelJsonConverterBase):
-    def __init__(self, workbook, output_dir, lambda_arn_prefix):
-        super(IntendJsonConverter, self).__init__(workbook, output_dir)
+    def __init__(self, workbook, lexjson_dir, lambda_arn_prefix):
+        super(IntendJsonConverter, self).__init__(workbook, lexjson_dir)
         self.lambda_arn_prefix = lambda_arn_prefix
 
     def _generate_intent_json(self, sheet_name: str):

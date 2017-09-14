@@ -4,8 +4,8 @@ from .ExcelJsonConverterBase import ExcelJsonConverterBase
 
 
 class BotJsonConverter(ExcelJsonConverterBase):
-    def __init__(self, workbook, output_dir):
-        super(BotJsonConverter, self).__init__(workbook, output_dir)
+    def __init__(self, workbook, lexjson_dir):
+        super(BotJsonConverter, self).__init__(workbook, lexjson_dir)
 
     def _generate_bot_json(self, sheet_name: str):
         data = {

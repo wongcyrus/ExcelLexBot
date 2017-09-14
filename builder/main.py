@@ -2,6 +2,7 @@ import json
 
 import boto3
 import botocore
+import os
 import requests
 import time
 
@@ -12,17 +13,12 @@ def lambda_handler(event, context):
     print("Event: %s" % event)
 
     try:
-        bucket = event['ResourceProperties']['SourceBucket']
-        key = event['ResourceProperties']['ExcelKey']
-
-        s3 = boto3.resource('s3')
-        try:
-            s3.Bucket(bucket).download_file(key, '/tmp/bot.xlsx')
-        except botocore.exceptions.ClientError as e:
-            respond_cloudformation(event, "FAILED")
-
         lambda_arn_prefix = context.invoked_function_arn.rsplit(':', 1)[0] + ":"
-        bot_builder = BotBuilder('/tmp/bot.xlsx', "/tmp", lambda_arn_prefix)
+        path = os.path.abspath(__file__)
+        dir_path = os.path.dirname(path)
+        template_dir = os.path.join(dir_path, "lexjson")
+
+        bot_builder = BotBuilder(None, template_dir, lambda_arn_prefix)
 
         if event['RequestType'] == 'Create':
             bot_builder.deploy_bot()

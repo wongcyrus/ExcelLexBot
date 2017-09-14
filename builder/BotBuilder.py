@@ -1,9 +1,8 @@
 import json
 import os
-import time
-import traceback
 
 import boto3
+import time
 
 from converter.BotJsonConverter import BotJsonConverter
 from converter.IntendJsonConverter import IntendJsonConverter
@@ -36,7 +35,6 @@ class BotBuilder:
             print(e)
 
     def deploy_bot(self):
-        self.generate_json()
         list(map((lambda x: self.__build_lex_component(x, self.client.put_slot_type)), self.botJConverter.slot_types))
         time.sleep(2)
         list(map((lambda x: self.__build_lex_component(x, self.client.put_intent)), self.botJConverter.intends))
@@ -49,7 +47,6 @@ class BotBuilder:
         self.botJConverter.generate_json()
 
     def undeploy_bot(self):
-        self.generate_json()
         list(map((lambda x: self.__delete_lex_component(x, self.client.delete_bot)), self.botJConverter.bots))
         time.sleep(10)
         list(map((lambda x: self.__delete_lex_component(x, self.client.delete_intent)), self.botJConverter.intends))

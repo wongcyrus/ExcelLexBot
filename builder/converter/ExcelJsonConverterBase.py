@@ -8,16 +8,22 @@ from openpyxl import load_workbook
 
 
 class ExcelJsonConverterBase(object):
-    def __init__(self, workbook, output_dir):
+    def __init__(self, workbook, lexjson_dir):
+        dir_path = os.path.dirname(os.path.abspath(__file__))
         self.data = []
-        self.templateDir = os.path.join(os.getcwd(), "converter", "template")
-        self.outputDir = output_dir
-        self.wb = load_workbook(workbook)
-        self.worksheets = self.wb.get_sheet_names()
+        self.templateDir = os.path.join(dir_path, "template")
+        self.outputDir = lexjson_dir
+        if workbook is not None:
+            self.wb = load_workbook(workbook)
+            self.worksheets = self.wb.get_sheet_names()
+        else:
+            self.wb = None
+            files = os.listdir(os.path.join(dir_path, lexjson_dir))
+            self.worksheets = [os.path.splitext(os.path.basename(fn))[0] for fn in files]
         self.intends = [elem for elem in self.worksheets if elem.endswith("Intend")]
         self.slot_types = [elem for elem in self.worksheets if elem.endswith("Types")]
         self.bots = [elem for elem in self.worksheets if elem.endswith("Bot")]
-        vars(self)
+        print(vars(self))
 
     def _render(self, filename: str, data: dict) -> str:
         j2_env = Environment(loader=FileSystemLoader(self.templateDir), trim_blocks=True)
