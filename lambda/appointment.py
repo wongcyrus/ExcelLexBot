@@ -519,4 +519,7 @@ def lambda_handler(event, context):
     time.tzset()
     logger.debug('event.bot.name={}'.format(event['bot']['name']))
 
-    return dispatch(event)
+    data = dispatch(event)
+    print(data)
+    return data
+

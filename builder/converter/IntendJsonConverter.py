@@ -24,7 +24,7 @@ class IntendJsonConverter(ExcelJsonConverterBase):
         sample_utterances = self._get_variable_length_row_data(2, 7, worksheet)
         data["sampleUtterances"] = sample_utterances
 
-        slot_start_row = 10
+        slot_start_row = 8
         slots = self._get_variable_length_column_data(1, slot_start_row, worksheet)
 
         def get_slot_row_dict(r: int):
@@ -69,10 +69,10 @@ class IntendJsonConverter(ExcelJsonConverterBase):
         data["slots"] = json.dumps(list(map(get_slot, slots)))
 
         data["dialogCodeHook"] = None if data["dialogCodeHook"] == "\"\"" \
-            else data["dialogCodeHook"][:1] + self.lambda_arn_prefix + data["dialogCodeHook"][1:]
+            else data["dialogCodeHook"][:1] + self.lambda_arn_prefix + "LexDispatcher\""
 
         data["fulfillmentActivity"] = data["fulfillmentActivity"] if data["fulfillmentActivity"] == "\"ReturnIntent\"" \
-            else data["fulfillmentActivity"][:1] + self.lambda_arn_prefix + data["fulfillmentActivity"][1:]
+            else data["fulfillmentActivity"][:1] + self.lambda_arn_prefix + "LexDispatcher\""
 
         self._save_json_template('intent.json', sheet_name, data)
 

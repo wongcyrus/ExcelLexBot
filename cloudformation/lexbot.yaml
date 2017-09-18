@@ -12,7 +12,7 @@ Resources:
   LexBuilderCustomReseourcesFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: main.lambda_handler
+      Handler: lex_customer_resources.lambda_handler
       Runtime: python3.6
       MemorySize: 512
       Timeout: 300
@@ -31,7 +31,7 @@ Resources:
     Type: Custom::LexBuilder
     DependsOn:
       - LexBuilderCustomReseourcesFunction
-      - LambdaInvokePermission
+      - LexDispatcherLambdaInvokePermission
     Version: 1.0
     Properties:
       ServiceToken: !GetAtt LexBuilderCustomReseourcesFunction.Arn
@@ -40,11 +40,47 @@ Resources:
       SourceBucket: !Ref SourceBucket
       ExcelKey: !Ref ExcelKey
 
+  LexDispatcherFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: LexDispatcher
+      Description: Lex Dispatcher
+      Handler: dispatcher.lambda_handler
+      Runtime: python3.6
+      MemorySize: 512
+      Timeout: 300
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - AWSLambdaExecute
+        - AWSLambdaBasicExecutionRole
+        - Version: '2012-10-17' # Policy Document
+          Statement:
+            - Effect: Allow
+              Action:
+                - lambda:InvokeFunction
+                - lambda:ListFunctions
+                - lambda:GetFunction
+              Resource: "*"
+      CodeUri:
+        Bucket: !Ref SourceBucket
+        Key: lex_builder_function.zip
+
+  LexDispatcherLambdaInvokePermission:
+    DependsOn: LexDispatcherFunction
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref LexDispatcherFunction
+      Action: lambda:InvokeFunction
+      Principal: lex.amazonaws.com
+      SourceArn: !Sub arn:aws:lex:${AWS::Region}:${AWS::AccountId}:intent:*:*
+
+
 #Define Lambda Code Hook
   ApponintmemtFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: appointment
+      FunctionName: MakeAppointmentIntend
       Description: Schedule a dentist appointment, using Amazon Lex to perform natural language understanding
       Handler: appointment.lambda_handler
       Runtime: python3.6
@@ -61,13 +97,5 @@ Resources:
         Bucket: !Ref SourceBucket
         Key: lambda_function.zip
 
-  LambdaInvokePermission:
-    DependsOn: ApponintmemtFunction
-    Type: AWS::Lambda::Permission
-    Properties:
-      FunctionName: !Ref ApponintmemtFunction
-      Action: lambda:InvokeFunction
-      Principal: lex.amazonaws.com
-      SourceArn: !Sub arn:aws:lex:${AWS::Region}:${AWS::AccountId}:intent:*:*
 
 

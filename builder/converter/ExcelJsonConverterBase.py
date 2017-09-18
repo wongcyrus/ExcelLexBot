@@ -13,6 +13,7 @@ class ExcelJsonConverterBase(object):
         self.data = []
         self.templateDir = os.path.join(dir_path, "template")
         self.outputDir = lexjson_dir
+        # todo: refactor into json generator and builder base.
         if workbook is not None:
             self.wb = load_workbook(workbook)
             self.worksheets = self.wb.get_sheet_names()

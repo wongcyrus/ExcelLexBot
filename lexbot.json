@@ -15,7 +15,7 @@ Resources:
         Key: lambda_function.zip
       Description: Schedule a dentist appointment, using Amazon Lex to perform natural
         language understanding
-      FunctionName: appointment
+      FunctionName: MakeAppointmentIntend10
       Handler: appointment.lambda_handler
       MemorySize: 512
       Policies:
@@ -28,20 +28,10 @@ Resources:
       Timeout: 300
       Tracing: Active
     Type: AWS::Serverless::Function
-  LambdaInvokePermission:
-    DependsOn: ApponintmemtFunction
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName:
-        Ref: ApponintmemtFunction
-      Principal: lex.amazonaws.com
-      SourceArn:
-        Fn::Sub: arn:aws:lex:${AWS::Region}:${AWS::AccountId}:intent:*:*
-    Type: AWS::Lambda::Permission
   LexBuilderCustomReseources:
     DependsOn:
     - LexBuilderCustomReseourcesFunction
-    - LambdaInvokePermission
+    - LexDispatcherLambdaInvokePermission
     Properties:
       ExcelKey:
         Ref: ExcelKey
@@ -61,7 +51,7 @@ Resources:
         Bucket:
           Ref: SourceBucket
         Key: lex_builder_function.zip
-      Handler: main.lambda_handler
+      Handler: lex_customer_resources.lambda_handler
       MemorySize: 512
       Policies:
       - AWSXrayWriteOnlyAccess
@@ -73,4 +63,40 @@ Resources:
       Timeout: 300
       Tracing: Active
     Type: AWS::Serverless::Function
+  LexDispatcherFunction:
+    Properties:
+      CodeUri:
+        Bucket:
+          Ref: SourceBucket
+        Key: lex_builder_function.zip
+      Description: Lex Dispatcher
+      FunctionName: LexDispatcher
+      Handler: dispatcher.lambda_handler
+      MemorySize: 512
+      Policies:
+      - AWSXrayWriteOnlyAccess
+      - AWSLambdaExecute
+      - AWSLambdaBasicExecutionRole
+      - Statement:
+        - Action:
+          - lambda:InvokeFunction
+          - lambda:ListFunctions
+          - lambda:GetFunction
+          Effect: Allow
+          Resource: '*'
+        Version: '2012-10-17'
+      Runtime: python3.6
+      Timeout: 300
+      Tracing: Active
+    Type: AWS::Serverless::Function
+  LexDispatcherLambdaInvokePermission:
+    DependsOn: LexDispatcherFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Ref: LexDispatcherFunction
+      Principal: lex.amazonaws.com
+      SourceArn:
+        Fn::Sub: arn:aws:lex:${AWS::Region}:${AWS::AccountId}:intent:*:*
+    Type: AWS::Lambda::Permission
 Transform: AWS::Serverless-2016-10-31
