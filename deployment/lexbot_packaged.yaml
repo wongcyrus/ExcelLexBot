@@ -1,0 +1,116 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  SourceBucket:
+    Default: howwhofeelinvideopackage
+    Type: String
+Resources:
+  LexBuilderCustomReseources:
+    DependsOn:
+    - LexBuilderCustomReseourcesFunction
+    - LexDispatcherLambdaInvokePermission
+    Properties:
+      ServiceToken:
+        Fn::GetAtt:
+        - LexBuilderCustomReseourcesFunction
+        - Arn
+      SourceBucket:
+        Ref: SourceBucket
+      StackName:
+        Ref: AWS::StackName
+    Type: Custom::LexBuilder
+    Version: 1.0
+  LexBuilderCustomReseourcesFunction:
+    Properties:
+      CodeUri:
+        Bucket:
+          Ref: SourceBucket
+        Key: lex_builder_function.zip
+      Handler: lex_customer_resources.lambda_handler
+      MemorySize: 512
+      Policies:
+      - AWSXrayWriteOnlyAccess
+      - AWSLambdaExecute
+      - AWSLambdaBasicExecutionRole
+      - AmazonS3ReadOnlyAccess
+      - AmazonLexFullAccess
+      Runtime: python3.6
+      Timeout: 300
+      Tracing: Active
+    Type: AWS::Serverless::Function
+  LexDispatcherFunction:
+    Properties:
+      CodeUri:
+        Bucket:
+          Ref: SourceBucket
+        Key: lex_builder_function.zip
+      Description: Lex Dispatcher
+      FunctionName: LexDispatcher
+      Handler: dispatcher.lambda_handler
+      MemorySize: 512
+      Policies:
+      - AWSXrayWriteOnlyAccess
+      - AWSLambdaExecute
+      - AWSLambdaBasicExecutionRole
+      - Statement:
+        - Action:
+          - lambda:InvokeFunction
+          - lambda:ListFunctions
+          - lambda:GetFunction
+          Effect: Allow
+          Resource: '*'
+        - Action:
+          - dynamodb:PutItem
+          Effect: Allow
+          Resource:
+          - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/OrderFlowersIntend
+          - Fn::Sub: arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/MakeAppointmentIntend
+        Version: '2012-10-17'
+      Runtime: python3.6
+      Timeout: 300
+      Tracing: Active
+    Type: AWS::Serverless::Function
+  LexDispatcherLambdaInvokePermission:
+    DependsOn: LexDispatcherFunction
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Ref: LexDispatcherFunction
+      Principal: lex.amazonaws.com
+      SourceArn:
+        Fn::Sub: arn:aws:lex:${AWS::Region}:${AWS::AccountId}:intent:*:*
+    Type: AWS::Lambda::Permission
+  MakeAppointmentIntendTable:
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: userId
+        AttributeType: S
+      - AttributeName: createAt
+        AttributeType: S
+      KeySchema:
+      - AttributeName: userId
+        KeyType: HASH
+      - AttributeName: createAt
+        KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      TableName: MakeAppointmentIntend
+    Type: AWS::DynamoDB::Table
+  OrderFlowersIntendTable:
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: userId
+        AttributeType: S
+      - AttributeName: createAt
+        AttributeType: S
+      KeySchema:
+      - AttributeName: userId
+        KeyType: HASH
+      - AttributeName: createAt
+        KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      TableName: OrderFlowersIntend
+    Type: AWS::DynamoDB::Table
+Transform: AWS::Serverless-2016-10-31

@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  SourceBucket:
+    Default: howwhofeelinvideopackage
+    Type: String
+Resources:
+  ApponintmemtFunction:
+    Properties:
+      CodeUri:
+        Bucket:
+          Ref: SourceBucket
+        Key: lambda_function.zip
+      Description: Schedule a dentist appointment, using Amazon Lex to perform natural
+        language understanding
+      FunctionName: MakeAppointmentIntend
+      Handler: appointment.lambda_handler
+      MemorySize: 512
+      Policies:
+      - AWSXrayWriteOnlyAccess
+      - AWSLambdaExecute
+      - AWSLambdaBasicExecutionRole
+      - AmazonS3ReadOnlyAccess
+      - AmazonLexRunBotsOnly
+      Runtime: python3.6
+      Timeout: 300
+      Tracing: Active
+    Type: AWS::Serverless::Function
+Transform: AWS::Serverless-2016-10-31
