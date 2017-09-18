@@ -4,6 +4,39 @@ Parameters:
     Default: howwhofeelinvideopackage
     Type: String
 Resources:
+  DynamoDBAutoscalingRole:
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action:
+          - sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service:
+            - application-autoscaling.amazonaws.com
+        Version: '2012-10-17'
+      Policies:
+      - PolicyDocument:
+          Statement:
+          - Action:
+            - dynamodb:DescribeTable
+            - dynamodb:UpdateTable
+            Effect: Allow
+            Resource:
+            - Fn::Join:
+              - ''
+              - - 'arn:aws:dynamodb:'
+                - Ref: AWS::Region
+                - :*:table/*
+          - Action:
+            - cloudwatch:DescribeAlarms
+            - cloudwatch:PutMetricAlarm
+            - cloudwatch:DeleteAlarms
+            Effect: Allow
+            Resource: '*'
+          Version: '2012-10-17'
+        PolicyName: lambdaIAMRolePolicy
+    Type: AWS::IAM::Role
   LexBuilderCustomReseources:
     DependsOn:
     - LexBuilderCustomReseourcesFunction
@@ -79,6 +112,32 @@ Resources:
       SourceArn:
         Fn::Sub: arn:aws:lex:${AWS::Region}:${AWS::AccountId}:intent:*:*
     Type: AWS::Lambda::Permission
+  MakeAppointmentIntendTabbleReadScalingTarget:
+    Properties:
+      MaxCapacity: 10
+      MinCapacity: 1
+      ResourceId:
+        Fn::Sub: table/${MakeAppointmentIntendTable}
+      RoleARN:
+        Fn::GetAtt:
+        - DynamoDBAutoscalingRole
+        - Arn
+      ScalableDimension: dynamodb:table:ReadCapacityUnits
+      ServiceNamespace: dynamodb
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+  MakeAppointmentIntendTabbleWriteScalingTarget:
+    Properties:
+      MaxCapacity: 10
+      MinCapacity: 1
+      ResourceId:
+        Fn::Sub: table/${MakeAppointmentIntendTable}
+      RoleARN:
+        Fn::GetAtt:
+        - DynamoDBAutoscalingRole
+        - Arn
+      ScalableDimension: dynamodb:table:WriteCapacityUnits
+      ServiceNamespace: dynamodb
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
   MakeAppointmentIntendTable:
     Properties:
       AttributeDefinitions:
@@ -96,6 +155,58 @@ Resources:
         WriteCapacityUnits: 5
       TableName: MakeAppointmentIntend
     Type: AWS::DynamoDB::Table
+  MakeAppointmentIntendTableReadScalingPolicy:
+    Properties:
+      PolicyName: TableReadScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId:
+        Ref: MakeAppointmentIntendTabbleReadScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBReadCapacityUtilization
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        TargetValue: 75
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+  MakeAppointmentIntendTableWriteScalingPolicy:
+    Properties:
+      PolicyName: TableWriteScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId:
+        Ref: MakeAppointmentIntendTabbleWriteScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBWriteCapacityUtilization
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        TargetValue: 75
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+  OrderFlowersIntendTabbleReadScalingTarget:
+    Properties:
+      MaxCapacity: 10
+      MinCapacity: 1
+      ResourceId:
+        Fn::Sub: table/${OrderFlowersIntendTable}
+      RoleARN:
+        Fn::GetAtt:
+        - DynamoDBAutoscalingRole
+        - Arn
+      ScalableDimension: dynamodb:table:ReadCapacityUnits
+      ServiceNamespace: dynamodb
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+  OrderFlowersIntendTabbleWriteScalingTarget:
+    Properties:
+      MaxCapacity: 10
+      MinCapacity: 1
+      ResourceId:
+        Fn::Sub: table/${OrderFlowersIntendTable}
+      RoleARN:
+        Fn::GetAtt:
+        - DynamoDBAutoscalingRole
+        - Arn
+      ScalableDimension: dynamodb:table:WriteCapacityUnits
+      ServiceNamespace: dynamodb
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
   OrderFlowersIntendTable:
     Properties:
       AttributeDefinitions:
@@ -113,4 +224,30 @@ Resources:
         WriteCapacityUnits: 5
       TableName: OrderFlowersIntend
     Type: AWS::DynamoDB::Table
+  OrderFlowersIntendTableReadScalingPolicy:
+    Properties:
+      PolicyName: TableReadScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId:
+        Ref: OrderFlowersIntendTabbleReadScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBReadCapacityUtilization
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        TargetValue: 75
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+  OrderFlowersIntendTableWriteScalingPolicy:
+    Properties:
+      PolicyName: TableWriteScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId:
+        Ref: OrderFlowersIntendTabbleWriteScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBWriteCapacityUtilization
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        TargetValue: 75
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
 Transform: AWS::Serverless-2016-10-31

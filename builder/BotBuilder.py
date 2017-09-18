@@ -48,10 +48,12 @@ class BotBuilder:
         self.botJConverter.generate_json()
 
     def undeploy_bot(self):
-        list(map((lambda x: self.__delete_lex_component(x, self.client.delete_bot)), self.botJConverter.bots))
-        time.sleep(10)
-        list(map((lambda x: self.__delete_lex_component(x, self.client.delete_intent)), self.botJConverter.intends))
-        time.sleep(5)
+        for bot in self.botJConverter.bots:
+            self.__delete_lex_component(bot, self.client.delete_bot)
+            time.sleep(10)
+        for intend in self.botJConverter.intends:
+            self.__delete_lex_component(intend, self.client.delete_intent)
+            time.sleep(5)
         list(map((lambda x: self.__delete_lex_component(x, self.client.delete_slot_type)),
                  self.botJConverter.slot_types))
 
