@@ -36,38 +36,52 @@ if __name__ == '__main__':
     site_packages = '.\env\BotBuilder\Lib\site-packages/'
 
     print("Generate Lex Json from Excel")
-    bot_builder = BotBuilder(os.path.join("./playground", "MakeAppointmentChatBot.xlsx"), "./output/lexjson",
+    bot_builder = BotBuilder(os.path.join("./playground", "ChatBot.xlsx"), "./output/lexjson",
                              "arn:aws:lambda:us-east-1:{0}:function:".format(aws_account))
-    bot_builder.generate_json()
+    bot_builder.generate_cloudformation_resources()
 
     print("Copy Cloudformation")
-    copyfile("./cloudformation/lexbot.yaml", "./deployment/lexbot.yaml")
+    copyfile("./output/lexjson/lexbot.yaml", "./deployment/lexbot.yaml")
+    copyfile("./codehook/codehook.yaml", "./deployment/codehook.yaml")
 
     print("Create Deployment packages including Lex Json and dependencies")
     zip_dir([site_packages, './builder', './output'], './deployment/lex_builder_function')
-    zip_dir([site_packages, './lambda'], './deployment/lambda_function')
+    zip_dir([site_packages, './codehook'], './deployment/lambda_function')
 
     print("Upload Package")
     subprocess.run(
         "aws s3 sync ./deployment/ s3://{0} --endpoint-url http://s3-accelerate.amazonaws.com".format(source_bucket),
         shell=True, check=True)
 
-    # print("Upload Cloudformation Template")
-    # subprocess.run("aws s3 cp ./deployment/lexbot.yaml s3://{0} --endpoint-url http://s3-accelerate.amazonaws.com"
-    #                .format(source_bucket))
-    #
-    # print("Delete Old Log Group")
-    # delete_log_groups()
-    #
-    # print("Transform Stack")
-    # subprocess.run(
-    #     "aws cloudformation package --template-file ./deployment/lexbot.yaml"
-    #     " --output-template-file lexbot.json --s3-bucket {0}".format(source_bucket),
-    #     shell=True, check=True)
-    # print("Create Stack")
-    # subprocess.run(
-    #     "aws cloudformation deploy --template-file lexbot.json --stack-name lex"
-    #     " --capabilities CAPABILITY_IAM".format(source_bucket),
-    #     shell=True, check=True)
+    print("Upload Cloudformation Template")
+    subprocess.run("aws s3 cp ./deployment/lexbot.yaml s3://{0} --endpoint-url http://s3-accelerate.amazonaws.com"
+                   .format(source_bucket))
+    subprocess.run("aws s3 cp ./deployment/codehook.yaml s3://{0} --endpoint-url http://s3-accelerate.amazonaws.com"
+                   .format(source_bucket))
+
+    print("Delete Old Log Group")
+    delete_log_groups()
+
+    print("Transform Stack")
+    subprocess.run(
+        "aws cloudformation package --template-file ./deployment/lexbot.yaml"
+        " --output-template-file ./deployment/lexbot_packaged.yaml --s3-bucket {0}".format(source_bucket),
+        shell=True, check=True)
+
+    subprocess.run(
+        "aws cloudformation package --template-file ./deployment/codehook.yaml"
+        " --output-template-file ./deployment/codehook_packaged.yaml --s3-bucket {0}".format(source_bucket),
+        shell=True, check=True)
+
+    print("Create Stack")
+    subprocess.run(
+        "aws cloudformation deploy --template-file ./deployment/lexbot_packaged.yaml --stack-name lex"
+        " --capabilities CAPABILITY_IAM".format(source_bucket),
+        shell=True, check=True)
+
+    subprocess.run(
+        "aws cloudformation deploy --template-file ./deployment/codehook_packaged.yaml --stack-name codehook"
+        " --capabilities CAPABILITY_IAM".format(source_bucket),
+        shell=True, check=True)
 
     print("Done")

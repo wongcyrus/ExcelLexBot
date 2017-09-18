@@ -26,24 +26,16 @@
     {%- endif %}
     {% endfor %}
   ],
-  {% if dialogCodeHook != None %}
   "dialogCodeHook":{
-      "uri": {{dialogCodeHook}},
+      "uri": {{lexDispatcher}},
       "messageVersion": "1.0"
   },
-  {% endif %}
   "fulfillmentActivity":
-{% if fulfillmentActivity == "\"ReturnIntent\"" %}
-    {
-      "type": "ReturnIntent"
-    }
-{% else %}
     {
       "type": "CodeHook",
       "codeHook": {
-            "uri": {{fulfillmentActivity}},
+            "uri": {{lexDispatcher}},
             "messageVersion": "1.0"
        }
     }
-{% endif %}
 }

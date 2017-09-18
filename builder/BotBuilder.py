@@ -5,14 +5,14 @@ import boto3
 import time
 
 from converter.BotJsonConverter import BotJsonConverter
-from converter.IntendJsonConverter import IntendJsonConverter
+from converter.IntendConverter import IntendConverter
 from converter.IntendSlotJsonConverter import IntendSlotJsonConverter
 
 
 class BotBuilder:
     def __init__(self, workbook, output_dir, lambda_arn_prefix):
         self.intendSlotJConverter = IntendSlotJsonConverter(workbook, output_dir)
-        self.intendConverter = IntendJsonConverter(workbook, output_dir, lambda_arn_prefix)
+        self.intendConverter = IntendConverter(workbook, output_dir, lambda_arn_prefix)
         self.botJConverter = BotJsonConverter(workbook, output_dir)
         self.output_dir = output_dir
         self.lambda_arn_prefix = lambda_arn_prefix
@@ -41,9 +41,10 @@ class BotBuilder:
         time.sleep(5)
         list(map((lambda x: self.__build_lex_component(x, self.client.put_bot)), self.botJConverter.bots))
 
-    def generate_json(self):
+    def generate_cloudformation_resources(self):
         self.intendSlotJConverter.generate_json()
         self.intendConverter.generate_json()
+        self.intendConverter.generate_cloudformation()
         self.botJConverter.generate_json()
 
     def undeploy_bot(self):
@@ -62,7 +63,7 @@ if __name__ == "__main__":
 
     bot_builder1 = BotBuilder(os.path.join("../playground", "MakeAppointmentChatBot.xlsx"),
                               os.path.join("../", "output"), " arn:aws:lambda:us-east-1:894598711988:function:")
-    bot_builder1.generate_json()
+    bot_builder1.generate_cloudformation_resources()
     # bot_builder1.deploy_bot()
     # time.sleep(10)
     # bot_builder1.undeploy_bot()

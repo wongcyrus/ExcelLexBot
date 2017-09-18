@@ -4,9 +4,6 @@ Parameters:
   SourceBucket:
     Type: String
     Default: howwhofeelinvideopackage
-  ExcelKey:
-    Type: String
-    Default: MakeAppointmentChatBot.xlsx
 Resources:
 # custom resource to create Lex component from excel
   LexBuilderCustomReseourcesFunction:
@@ -38,7 +35,6 @@ Resources:
       StackName:
         Ref: AWS::StackName
       SourceBucket: !Ref SourceBucket
-      ExcelKey: !Ref ExcelKey
 
   LexDispatcherFunction:
     Type: AWS::Serverless::Function
@@ -62,6 +58,15 @@ Resources:
                 - lambda:ListFunctions
                 - lambda:GetFunction
               Resource: "*"
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource:
+#    
+                - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/OrderFlowersIntend
+#    
+                - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/MakeAppointmentIntend
+#    
       CodeUri:
         Bucket: !Ref SourceBucket
         Key: lex_builder_function.zip
@@ -75,27 +80,52 @@ Resources:
       Principal: lex.amazonaws.com
       SourceArn: !Sub arn:aws:lex:${AWS::Region}:${AWS::AccountId}:intent:*:*
 
-
-#Define Lambda Code Hook
-  ApponintmemtFunction:
-    Type: AWS::Serverless::Function
+#    
+  OrderFlowersIntendTable:
+    Type: AWS::DynamoDB::Table
     Properties:
-      FunctionName: MakeAppointmentIntend10
-      Description: Schedule a dentist appointment, using Amazon Lex to perform natural language understanding
-      Handler: appointment.lambda_handler
-      Runtime: python3.6
-      MemorySize: 512
-      Timeout: 300
-      Tracing: Active
-      Policies:
-        - AWSXrayWriteOnlyAccess
-        - AWSLambdaExecute
-        - AWSLambdaBasicExecutionRole
-        - AmazonS3ReadOnlyAccess
-        - AmazonLexRunBotsOnly
-      CodeUri:
-        Bucket: !Ref SourceBucket
-        Key: lambda_function.zip
+      TableName: OrderFlowersIntend
+      AttributeDefinitions:
+        -
+          AttributeName: userId
+          AttributeType: S
+        -
+          AttributeName: createAt
+          AttributeType: S
+      KeySchema:
+        -
+          AttributeName: userId
+          KeyType: HASH
+        -
+          AttributeName: createAt
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+#    
+  MakeAppointmentIntendTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: MakeAppointmentIntend
+      AttributeDefinitions:
+        -
+          AttributeName: userId
+          AttributeType: S
+        -
+          AttributeName: createAt
+          AttributeType: S
+      KeySchema:
+        -
+          AttributeName: userId
+          KeyType: HASH
+        -
+          AttributeName: createAt
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+#    
+
 
 
 

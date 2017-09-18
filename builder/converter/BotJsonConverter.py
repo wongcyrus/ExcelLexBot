@@ -1,9 +1,9 @@
 import json
 
-from .ExcelJsonConverterBase import ExcelJsonConverterBase
+from .ExcelConverterBase import ExcelConverterBase
 
 
-class BotJsonConverter(ExcelJsonConverterBase):
+class BotJsonConverter(ExcelConverterBase):
     def __init__(self, workbook, lexjson_dir):
         super(BotJsonConverter, self).__init__(workbook, lexjson_dir)
 

@@ -1,7 +1,7 @@
-from .ExcelJsonConverterBase import ExcelJsonConverterBase
+from .ExcelConverterBase import ExcelConverterBase
 
 
-class IntendSlotJsonConverter(ExcelJsonConverterBase):
+class IntendSlotJsonConverter(ExcelConverterBase):
     def __init__(self, workbook, lexjson_dir):
         super(IntendSlotJsonConverter, self).__init__(workbook, lexjson_dir)
 
