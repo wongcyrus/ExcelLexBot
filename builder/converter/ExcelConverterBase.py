@@ -1,3 +1,4 @@
+import codecs
 import json
 import os
 import string
@@ -24,12 +25,17 @@ class ExcelConverterBase(object):
         self.intends = [elem for elem in self.worksheets if elem.endswith("Intend")]
         self.slot_types = [elem for elem in self.worksheets if elem.endswith("Types")]
         self.bots = [elem for elem in self.worksheets if elem.endswith("Bot")]
-        print(vars(self))
 
-    def _render(self, filename: str, data: dict, isJson: bool) -> str:
+    @staticmethod
+    def __get_ascii_only_json_str(c: str):
+        a = codecs.encode(codecs.decode(c, 'unicode-escape'), 'ascii', 'ignore')
+        # print(type(a))
+        return json.dumps(str(a, 'utf-8'), indent=4)
+
+    def _render(self, filename: str, data: dict, is_json: bool) -> str:
         j2_env = Environment(loader=FileSystemLoader(self.templateDir), trim_blocks=True)
         template = j2_env.get_template(filename).render(**data)
-        if isJson:
+        if is_json:
             template = str.encode(template, 'utf-8')
             template = template.decode('unicode_escape').encode('ascii', 'ignore')
             return json.dumps(json.loads(template), indent=4)
@@ -44,7 +50,7 @@ class ExcelConverterBase(object):
         with open(os.path.join(self.outputDir, save_filename + '.yaml'), "w+", encoding='utf8') as text_file:
             print(self._render(template_filename, data, False), file=text_file)
 
-    def populate_single_cell_data(self, sheet_name: str, data: dict):
+    def populate_simple_cell_data(self, sheet_name: str, data: dict):
         data = self._get_single_value_cell_data(sheet_name, data)
         data["name"] = json.dumps(sheet_name)
         return data
@@ -79,10 +85,11 @@ class ExcelConverterBase(object):
         i = column
         column = string.ascii_uppercase[i - 1]
         content = self._get_cell_value(worksheet, column + str(row))[1:-1]
+
         if '\\n' in content:
-            return list(map(json.dumps, content.split('\\n')))
+            return list(map(self.__get_ascii_only_json_str, content.split('\\n')))
         else:
-            return [content]
+            return [self.__get_ascii_only_json_str(content)]
 
     def _get_single_value_cell_data(self, sheet_name: str, data: dict):
         worksheet = self.wb[sheet_name]

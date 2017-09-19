@@ -50,7 +50,7 @@ Resources:
         - AWSXrayWriteOnlyAccess
         - AWSLambdaExecute
         - AWSLambdaBasicExecutionRole
-        - Version: '2012-10-17' # Policy Document
+        - Version: 2012-10-17
           Statement:
             - Effect: Allow
               Action:
@@ -66,6 +66,15 @@ Resources:
                 - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/OrderFlowersIntend
 #    
                 - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/MakeAppointmentIntend
+#    
+            - Effect: Allow
+              Action:
+                - sns:Publish
+              Resource:
+#    
+                - !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:OrderFlowersIntendSNSTopic
+#    
+                - !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:MakeAppointmentIntendSNSTopic
 #    
       CodeUri:
         Bucket: !Ref SourceBucket
@@ -219,23 +228,40 @@ Resources:
         TargetValue: 75
 
 #    
+#    
+  MakeAppointmentIntendSNSTopic:
+    Type: "AWS::SNS::Topic"
+    Properties:
+      Subscription:
+#      
+        -
+          Endpoint: "cywong@vtc.edu.hk"
+          Protocol: email
+#      
+        -
+          Endpoint: "cy.gdoc@gmail.com"
+          Protocol: email
+#      
+      TopicName: "MakeAppointmentIntendSNSTopic"
+
+#    
   DynamoDBAutoscalingRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
-        Version: "2012-10-17"
+        Version: 2012-10-17
         Statement:
           -
-            Effect: "Allow"
+            Effect: Allow
             Principal:
               Service:
-                - "application-autoscaling.amazonaws.com"
+                - application-autoscaling.amazonaws.com
             Action:
-              - "sts:AssumeRole"
+              - sts:AssumeRole
       Policies:
         - PolicyName: lambdaIAMRolePolicy
           PolicyDocument:
-            Version: '2012-10-17'
+            Version: 2012-10-17
             Statement:
               - Effect: Allow
                 Action:

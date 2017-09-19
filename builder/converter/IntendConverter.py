@@ -17,12 +17,12 @@ class IntendConverter(ExcelConverterBase):
             "confirmationPrompt": "B3",
             "rejectionStatement": "B4"
         }
-        data = self.populate_single_cell_data(sheet_name, data)
+        data = self.populate_simple_cell_data(sheet_name, data)
 
         sample_utterances = self._get_newline_spilt_data(2, 5, worksheet)
         data["sampleUtterances"] = sample_utterances
 
-        slot_start_row = 8
+        slot_start_row = 9
         slots = self._get_variable_length_column_data(1, slot_start_row, worksheet)
 
         def get_slot_row_dict(r: int):
@@ -71,5 +71,13 @@ class IntendConverter(ExcelConverterBase):
         list(map(self._generate_intent_json, self.intends))
 
     def generate_cloudformation(self):
-        data = {"intends": self.intends}
+        def is_single_none(emails: list):
+            return len(emails) == 1 and emails[0][1:-1] == "None"
+
+        intend_to_email = dict(filter(lambda x: not is_single_none(x[1]),
+                                      map(lambda i: (i, self._get_newline_spilt_data(2, 6, self.wb[i])), self.intends)))
+
+        data = {"intends": self.intends,
+                "intendToEmail": intend_to_email}
+
         self._save_yaml_template('lexbot.yaml', "lexbot", data)

@@ -13,7 +13,7 @@ class BotJsonConverter(ExcelConverterBase):
             "abortStatement": "B2",
             "clarificationPrompt": "B3"
         }
-        data = self.populate_single_cell_data(sheet_name, data)
+        data = self.populate_simple_cell_data(sheet_name, data)
         data["intents"] = [json.dumps(elem) for elem in self.worksheets if
                            elem.endswith("Intend")]
         self._save_json_template('bot.json', sheet_name, data)
