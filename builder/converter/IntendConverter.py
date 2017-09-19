@@ -17,9 +17,9 @@ class IntendConverter(ExcelConverterBase):
             "confirmationPrompt": "B3",
             "rejectionStatement": "B4"
         }
-        data = self._get_single_value_cell_data(sheet_name, data)
+        data = self.populate_single_cell_data(sheet_name, data)
 
-        sample_utterances = self._get_variable_length_row_data(2, 5, worksheet)
+        sample_utterances = self._get_newline_spilt_data(2, 5, worksheet)
         data["sampleUtterances"] = sample_utterances
 
         slot_start_row = 8

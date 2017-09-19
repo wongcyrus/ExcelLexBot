@@ -44,6 +44,11 @@ class ExcelConverterBase(object):
         with open(os.path.join(self.outputDir, save_filename + '.yaml'), "w+", encoding='utf8') as text_file:
             print(self._render(template_filename, data, False), file=text_file)
 
+    def populate_single_cell_data(self, sheet_name: str, data: dict):
+        data = self._get_single_value_cell_data(sheet_name, data)
+        data["name"] = json.dumps(sheet_name)
+        return data
+
     @staticmethod
     def _get_cell_value(worksheet, address):
         val = str(worksheet[address].value)
@@ -70,10 +75,18 @@ class ExcelConverterBase(object):
             column = string.ascii_uppercase[i - 1]
         return data
 
+    def _get_newline_spilt_data(self, column: int, row: int, worksheet):
+        i = column
+        column = string.ascii_uppercase[i - 1]
+        content = self._get_cell_value(worksheet, column + str(row))[1:-1]
+        if '\\n' in content:
+            return list(map(json.dumps, content.split('\\n')))
+        else:
+            return [content]
+
     def _get_single_value_cell_data(self, sheet_name: str, data: dict):
         worksheet = self.wb[sheet_name]
         data = dict(map(lambda item: (item[0], self._get_cell_value(worksheet, item[1])), data.items()))
-        data["name"] = json.dumps(sheet_name)
         return data
 
     @abstractmethod

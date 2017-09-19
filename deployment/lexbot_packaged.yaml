@@ -114,7 +114,7 @@ Resources:
     Type: AWS::Lambda::Permission
   MakeAppointmentIntendTabbleReadScalingTarget:
     Properties:
-      MaxCapacity: 10
+      MaxCapacity: 50
       MinCapacity: 1
       ResourceId:
         Fn::Sub: table/${MakeAppointmentIntendTable}
@@ -127,7 +127,7 @@ Resources:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
   MakeAppointmentIntendTabbleWriteScalingTarget:
     Properties:
-      MaxCapacity: 10
+      MaxCapacity: 50
       MinCapacity: 1
       ResourceId:
         Fn::Sub: table/${MakeAppointmentIntendTable}
@@ -183,7 +183,7 @@ Resources:
     Type: AWS::ApplicationAutoScaling::ScalingPolicy
   OrderFlowersIntendTabbleReadScalingTarget:
     Properties:
-      MaxCapacity: 10
+      MaxCapacity: 50
       MinCapacity: 1
       ResourceId:
         Fn::Sub: table/${OrderFlowersIntendTable}
@@ -196,7 +196,7 @@ Resources:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
   OrderFlowersIntendTabbleWriteScalingTarget:
     Properties:
-      MaxCapacity: 10
+      MaxCapacity: 50
       MinCapacity: 1
       ResourceId:
         Fn::Sub: table/${OrderFlowersIntendTable}

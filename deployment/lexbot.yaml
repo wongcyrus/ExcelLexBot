@@ -107,7 +107,7 @@ Resources:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
       MinCapacity: 1
-      MaxCapacity: 10
+      MaxCapacity: 50
       ResourceId: !Sub table/${OrderFlowersIntendTable}
       RoleARN: !GetAtt DynamoDBAutoscalingRole.Arn
       ScalableDimension: dynamodb:table:WriteCapacityUnits
@@ -130,7 +130,7 @@ Resources:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
       MinCapacity: 1
-      MaxCapacity: 10
+      MaxCapacity: 50
       ResourceId: !Sub table/${OrderFlowersIntendTable}
       RoleARN: !GetAtt DynamoDBAutoscalingRole.Arn
       ScalableDimension: dynamodb:table:ReadCapacityUnits
@@ -176,7 +176,7 @@ Resources:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
       MinCapacity: 1
-      MaxCapacity: 10
+      MaxCapacity: 50
       ResourceId: !Sub table/${MakeAppointmentIntendTable}
       RoleARN: !GetAtt DynamoDBAutoscalingRole.Arn
       ScalableDimension: dynamodb:table:WriteCapacityUnits
@@ -199,7 +199,7 @@ Resources:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
       MinCapacity: 1
-      MaxCapacity: 10
+      MaxCapacity: 50
       ResourceId: !Sub table/${MakeAppointmentIntendTable}
       RoleARN: !GetAtt DynamoDBAutoscalingRole.Arn
       ScalableDimension: dynamodb:table:ReadCapacityUnits

@@ -54,8 +54,9 @@ class BotBuilder:
         for intend in self.botJConverter.intends:
             self.__delete_lex_component(intend, self.client.delete_intent)
             time.sleep(5)
-        list(map((lambda x: self.__delete_lex_component(x, self.client.delete_slot_type)),
-                 self.botJConverter.slot_types))
+        for slot in self.botJConverter.slot_types:
+            self.__delete_lex_component(slot, self.client.delete_slot_type)
+            time.sleep(5)
 
 
 if __name__ == "__main__":

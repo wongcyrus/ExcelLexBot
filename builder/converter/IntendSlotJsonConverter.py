@@ -11,7 +11,7 @@ class IntendSlotJsonConverter(ExcelConverterBase):
             "description": "B1",
             "valueSelectionStrategy": "B2",
         }
-        data = self._get_single_value_cell_data(sheet_name, data)
+        data = self.populate_single_cell_data(sheet_name, data)
 
         slots = self._get_variable_length_column_data(2, 3, worksheet)
         data["enumerationValues"] = slots
