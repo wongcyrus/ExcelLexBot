@@ -80,7 +80,7 @@ def save_fulfillment(table_name: str, event):
 def publish_to_sns(intend: str, event: dict, aws_account_id: str):
     arn = "arn:aws:sns:{0}:{1}:{2}SNSTopic".format(region, aws_account_id, intend)
     data = get_save_data(event)
-    data = json.dumps({"default": ''.join('{} : {} \n '.format(key, val) for key, val in data.items())})
+    data = json.dumps({"default": ''.join('{} : {} \n'.format(key, val) for key, val in data.items())})
     try:
         sns.publish(
             TopicArn=arn,
