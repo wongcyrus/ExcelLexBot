@@ -51,11 +51,22 @@ Resources:
         Bucket: !Ref SourceBucket
         Key: lex_builder_function.zip
       Events:
-        XlsxUpload:
+        XlsxPut:
           Type: S3
           Properties:
             Bucket: !Ref Bucket
-            Events: s3:ObjectCreated:*
+            Events: s3:ObjectCreated:Put
+            Filter:
+              S3Key:
+                Rules:
+                  -
+                    Name: suffix
+                    Value: .xlsx
+        XlsxDelete:
+          Type: S3
+          Properties:
+            Bucket: !Ref Bucket
+            Events: s3:ObjectRemoved:Delete
             Filter:
               S3Key:
                 Rules:

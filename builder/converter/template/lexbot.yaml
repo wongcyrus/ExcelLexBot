@@ -22,7 +22,7 @@ Resources:
         - AmazonLexFullAccess
       CodeUri:
         Bucket: !Ref SourceBucket
-        Key: !Sub ${AWS::StackName}.zip
+        Key: !Sub code/${AWS::StackName}.zip
 
   LexBuilderCustomReseources:
     Type: Custom::LexBuilder
@@ -78,7 +78,7 @@ Resources:
 
       CodeUri:
         Bucket: !Ref SourceBucket
-        Key: !Sub ${AWS::StackName}.zip
+        Key: !Sub code/${AWS::StackName}.zip
 
   LexDispatcherLambdaInvokePermission:
     DependsOn: LexDispatcherFunction
