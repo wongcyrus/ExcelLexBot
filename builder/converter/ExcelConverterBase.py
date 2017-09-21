@@ -22,8 +22,8 @@ class ExcelConverterBase(object):
             self.wb = None
             files = os.listdir(os.path.join(dir_path, lexjson_dir))
             self.worksheets = [os.path.splitext(os.path.basename(fn))[0] for fn in files]
-        self.intends = [elem for elem in self.worksheets if elem.endswith("Intend")]
-        self.slot_types = [elem for elem in self.worksheets if elem.endswith("Types")]
+        self.intents = [elem for elem in self.worksheets if elem.endswith("Intent")]
+        self.slot_types = [elem for elem in self.worksheets if elem.endswith("Type")]
         self.bots = [elem for elem in self.worksheets if elem.endswith("Bot")]
 
     @staticmethod

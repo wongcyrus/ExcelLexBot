@@ -5,14 +5,14 @@ import boto3
 import time
 
 from converter.BotJsonConverter import BotJsonConverter
-from converter.IntendConverter import IntendConverter
-from converter.IntendSlotJsonConverter import IntendSlotJsonConverter
+from converter.IntentConverter import IntentConverter
+from converter.SlotJsonConverter import SlotJsonConverter
 
 
 class BotBuilder:
     def __init__(self, workbook, output_dir, lambda_arn_prefix):
-        self.intendSlotJConverter = IntendSlotJsonConverter(workbook, output_dir)
-        self.intendConverter = IntendConverter(workbook, output_dir, lambda_arn_prefix)
+        self.slotJConverter = SlotJsonConverter(workbook, output_dir)
+        self.intentConverter = IntentConverter(workbook, output_dir, lambda_arn_prefix)
         self.botJConverter = BotJsonConverter(workbook, output_dir)
         self.output_dir = output_dir
         self.lambda_arn_prefix = lambda_arn_prefix
@@ -37,21 +37,21 @@ class BotBuilder:
     def deploy_bot(self):
         list(map((lambda x: self.__build_lex_component(x, self.client.put_slot_type)), self.botJConverter.slot_types))
         time.sleep(2)
-        list(map((lambda x: self.__build_lex_component(x, self.client.put_intent)), self.botJConverter.intends))
+        list(map((lambda x: self.__build_lex_component(x, self.client.put_intent)), self.botJConverter.intents))
         time.sleep(5)
         list(map((lambda x: self.__build_lex_component(x, self.client.put_bot)), self.botJConverter.bots))
 
     def generate_cloudformation_resources(self):
-        self.intendSlotJConverter.generate_json()
-        self.intendConverter.generate_json()
-        self.intendConverter.generate_cloudformation()
+        self.slotJConverter.generate_json()
+        self.intentConverter.generate_json()
+        self.intentConverter.generate_cloudformation()
         self.botJConverter.generate_json()
 
     def undeploy_bot(self):
         for bot in self.botJConverter.bots:
             self.__delete_lex_component(bot, self.client.delete_bot)
             time.sleep(10)
-        for intend in self.botJConverter.intends:
+        for intend in self.botJConverter.intents:
             self.__delete_lex_component(intend, self.client.delete_intent)
             time.sleep(5)
         for slot in self.botJConverter.slot_types:

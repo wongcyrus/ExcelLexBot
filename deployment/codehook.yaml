@@ -9,7 +9,7 @@ Resources:
   ApponintmemtFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: MakeAppointmentIntend
+      FunctionName: MakeAppointmentIntent
       Description: Schedule a dentist appointment, using Amazon Lex to perform natural language understanding
       Handler: appointment.lambda_handler
       Runtime: python3.6

@@ -4,9 +4,9 @@ from json import JSONDecoder
 from .ExcelConverterBase import ExcelConverterBase
 
 
-class IntendConverter(ExcelConverterBase):
+class IntentConverter(ExcelConverterBase):
     def __init__(self, workbook, lexjson_dir, lambda_arn_prefix):
-        super(IntendConverter, self).__init__(workbook, lexjson_dir)
+        super(IntentConverter, self).__init__(workbook, lexjson_dir)
         self.lambda_arn_prefix = lambda_arn_prefix
 
     def _generate_intent_json(self, sheet_name: str):
@@ -68,16 +68,16 @@ class IntendConverter(ExcelConverterBase):
         self._save_json_template('intent.json', sheet_name, data)
 
     def generate_json(self):
-        list(map(self._generate_intent_json, self.intends))
+        list(map(self._generate_intent_json, self.intents))
 
     def generate_cloudformation(self):
         def is_single_none(emails: list):
             return len(emails) == 1 and emails[0][1:-1] == "None"
 
         intend_to_email = dict(filter(lambda x: not is_single_none(x[1]),
-                                      map(lambda i: (i, self._get_newline_spilt_data(2, 6, self.wb[i])), self.intends)))
+                                      map(lambda i: (i, self._get_newline_spilt_data(2, 6, self.wb[i])), self.intents)))
 
-        data = {"intends": self.intends,
-                "intendToEmail": intend_to_email}
+        data = {"intents": self.intents,
+                "intentToEmail": intend_to_email}
 
         self._save_yaml_template('lexbot.yaml', "lexbot", data)

@@ -62,7 +62,7 @@ Resources:
               Action:
                 - dynamodb:PutItem
               Resource:
-#    {% for intend in intends %}
+#    {% for intend in intents %}
 
                 - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/{{ intend }}
 #    {% endfor %}
@@ -71,9 +71,9 @@ Resources:
               Action:
                 - sns:Publish
               Resource:
-#    {% for intend in intends %}
+#    {% for intent in intents %}
 
-                - !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:{{ intend }}SNSTopic
+                - !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:{{ intent }}SNSTopic
 #    {% endfor %}
 
       CodeUri:
@@ -89,12 +89,12 @@ Resources:
       Principal: lex.amazonaws.com
       SourceArn: !Sub arn:aws:lex:${AWS::Region}:${AWS::AccountId}:intent:*:*
 
-#    {% for intend in intends %}
+#    {% for intent in intents %}
 
-  {{ intend }}Table:
+  {{ intent }}Table:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: {{ intend }}
+      TableName: {{ intent }}
       AttributeDefinitions:
         -
           AttributeName: userId
@@ -113,22 +113,22 @@ Resources:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
 
-  {{ intend }}TabbleWriteScalingTarget:
+  {{ intent }}TabbleWriteScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
       MinCapacity: 1
       MaxCapacity: 50
-      ResourceId: !Sub table/${{ '{' }}{{ intend }}Table}
+      ResourceId: !Sub table/${{ '{' }}{{ intent }}Table}
       RoleARN: !GetAtt DynamoDBAutoscalingRole.Arn
       ScalableDimension: dynamodb:table:WriteCapacityUnits
       ServiceNamespace: dynamodb
 
-  {{ intend }}TableWriteScalingPolicy:
+  {{ intent }}TableWriteScalingPolicy:
     Type: AWS::ApplicationAutoScaling::ScalingPolicy
     Properties:
       PolicyName: TableWriteScalingPolicy
       PolicyType: TargetTrackingScaling
-      ScalingTargetId: !Ref {{ intend }}TabbleWriteScalingTarget
+      ScalingTargetId: !Ref {{ intent }}TabbleWriteScalingTarget
       TargetTrackingScalingPolicyConfiguration:
         PredefinedMetricSpecification:
           PredefinedMetricType: DynamoDBWriteCapacityUtilization
@@ -136,22 +136,22 @@ Resources:
         ScaleOutCooldown: 60
         TargetValue: 75
 
-  {{ intend }}TabbleReadScalingTarget:
+  {{ intent }}TabbleReadScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
       MinCapacity: 1
       MaxCapacity: 50
-      ResourceId: !Sub table/${{ '{' }}{{ intend }}Table}
+      ResourceId: !Sub table/${{ '{' }}{{ intent }}Table}
       RoleARN: !GetAtt DynamoDBAutoscalingRole.Arn
       ScalableDimension: dynamodb:table:ReadCapacityUnits
       ServiceNamespace: dynamodb
 
-  {{ intend }}TableReadScalingPolicy:
+  {{ intent }}TableReadScalingPolicy:
     Type: AWS::ApplicationAutoScaling::ScalingPolicy
     Properties:
       PolicyName: TableReadScalingPolicy
       PolicyType: TargetTrackingScaling
-      ScalingTargetId: !Ref {{ intend }}TabbleReadScalingTarget
+      ScalingTargetId: !Ref {{ intent }}TabbleReadScalingTarget
       TargetTrackingScalingPolicyConfiguration:
         PredefinedMetricSpecification:
           PredefinedMetricType: DynamoDBReadCapacityUtilization
@@ -161,7 +161,7 @@ Resources:
 
 #    {% endfor %}
 
-#    {% for key, emails in intendToEmail.items() %}
+#    {% for key, emails in intentToEmail.items() %}
 
   {{ key }}SNSTopic:
     Type: "AWS::SNS::Topic"
