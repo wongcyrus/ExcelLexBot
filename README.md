@@ -1,6 +1,4 @@
-#Excel Lex Bot
+**Excel Lex Bot**
 
-Our institution hopes to make use of Amazon Lex in teaching, research and health care. However, most of them are non-technical users such as English Teachers and Therapist and we don’t developers to support them from the development to update their Chat Bot. Most of them can know how to Microsoft Excel well and we don’t think it is possible to teach them build Chat Bot in Amazon Lex Console, although it is already very user friendly for developers.
-ExcelLexBot is a CloudFormation package that converts predefined format excel (xlsx) into Amazon Lex Chat Bot.
-
-
+Our institution decides to try Amazon Lex in teaching, research and health care. However, most users are non-technical users such as English Teachers and Therapist but we don’t have enough developers to support them from the development to the long term update their Chat Bot. It is possible to teach them build Chat Bot in Amazon Lex Console, although it is already very user friendly for developers. However, most of them know how to use Microsoft Excel and we start build project “ExcelLexBot” that let them use Excel to create Chatbot with minimum effort for developers.
+ExcelLexBot is a serverless applications using AWS SAM (https://github.com/awslabs/serverless-application-model) that converts Excel file (xlsx) with predefined format into Amazon Lex Chat Bot.

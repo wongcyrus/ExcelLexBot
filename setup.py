@@ -1,7 +1,6 @@
 import os
 import subprocess
 import zipfile
-from shutil import copyfile
 
 import boto3
 
@@ -35,6 +34,7 @@ if __name__ == '__main__':
     # Please change the virtual environment path.
     site_packages = '.\env\BotBuilder\Lib\site-packages/'
 
+    print("Deploy Excel Lex Bot")
     print("Create Deployment packages including Lex Json and dependencies")
     zip_dir([site_packages, './builder'], './deployment/lex_builder_function')
 
@@ -54,10 +54,9 @@ if __name__ == '__main__':
         shell=True, check=True)
 
     print("Deploy Code hook")
-    copyfile("./codehook/codehook.yaml", "./deployment/codehook.yaml")
-    zip_dir([site_packages, './codehook'], './deployment/lambda_function')
+    zip_dir([site_packages, './codehook'], './deployment/codehook')
 
-    subprocess.run("aws s3 cp ./deployment/lambda_function.zip s3://{0} "
+    subprocess.run("aws s3 cp ./deployment/codehook.zip s3://{0} "
                    "--endpoint-url http://s3-accelerate.amazonaws.com"
                    .format(source_bucket))
 
