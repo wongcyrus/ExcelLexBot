@@ -34,6 +34,7 @@ Resources:
                 - cloudformation:CreateStack
                 - cloudformation:DescribeChangeSet
                 - cloudformation:CreateChangeSet
+                - cloudformation:DeleteChangeSet
                 - cloudformation:DeleteStack
                 - cloudformation:ExecuteChangeSet
                 - cloudwatch:DescribeAlarms
