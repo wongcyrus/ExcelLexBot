@@ -4,10 +4,10 @@ Description: Upload Excel xlsx to S3 and trigger Excel Lex Bot
 Parameters:
   SourceBucket:
     Type: String
-    Default: howwhofeelinvideopackage
+    Default: excellexbotdeployment
   ExcelBucketName:
     Type: String
-    Default: excellexbot
+    Default: excellexbotdemo
 Resources:
   ExcelLexBotS3TriggerFunction:
     Type: AWS::Serverless::Function

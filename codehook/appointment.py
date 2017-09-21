@@ -501,7 +501,7 @@ def dispatch(intent_request):
     intent_name = intent_request['currentIntent']['name']
 
     # Dispatch to your bot's intent handlers
-    if intent_name == 'MakeAppointmentIntend':
+    if intent_name == 'MakeAppointmentIntent':
         return make_appointment(intent_request)
     raise Exception('Intent with name ' + intent_name + ' not supported')
 

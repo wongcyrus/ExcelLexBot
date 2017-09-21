@@ -24,7 +24,7 @@ Resources:
         - AmazonLexRunBotsOnly
       CodeUri:
         Bucket: !Ref SourceBucket
-        Key: lambda_function.zip
+        Key: codehook.zip
 
 
 
