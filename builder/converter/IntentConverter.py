@@ -5,12 +5,12 @@ from .ExcelConverterBase import ExcelConverterBase
 
 
 class IntentConverter(ExcelConverterBase):
-    def __init__(self, workbook, lexjson_dir, lambda_arn_prefix):
-        super(IntentConverter, self).__init__(workbook, lexjson_dir)
+    def __init__(self, workbook_path_name, lexjson_dir, lambda_arn_prefix):
+        super(IntentConverter, self).__init__(workbook_path_name, lexjson_dir)
         self.lambda_arn_prefix = lambda_arn_prefix
 
     def _generate_intent_json(self, sheet_name: str):
-        worksheet = self.wb[sheet_name]
+        worksheet = self._get_worksheet(sheet_name)
         data = {
             "description": "B1",
             "maxAttempts": "B2",
@@ -59,11 +59,12 @@ class IntentConverter(ExcelConverterBase):
                 slot_data["sampleUtterances"] = list(map(JSONDecoder().decode, slot_sample_utterances))
             if not slot["slotType"].startswith('AMAZON.'):
                 slot_data["slotTypeVersion"] = "$LATEST"
+                slot_data["slotType"] = self.namespace + "_" + slot["slotType"]
 
             return slot_data
 
         data["slots"] = json.dumps(list(map(get_slot, slots)))
-        data["lexDispatcher"] = "\"" + self.lambda_arn_prefix + "LexDispatcher\""
+        data["lexDispatcher"] = "\"" + self.lambda_arn_prefix + self.namespace + "LexDispatcher\""
 
         self._save_json_template('intent.json', sheet_name, data)
 
@@ -75,9 +76,14 @@ class IntentConverter(ExcelConverterBase):
             return len(emails) == 1 and emails[0][1:-1] == "None"
 
         intend_to_email = dict(filter(lambda x: not is_single_none(x[1]),
-                                      map(lambda i: (i, self._get_newline_spilt_data(2, 6, self.wb[i])), self.intents)))
+                                      map(lambda i: (
+                                          i.replace("_", ""),
+                                          self._get_newline_spilt_data(2, 6, self._get_worksheet(i))),
+                                          self.intents)))
 
-        data = {"intents": self.intents,
-                "intentToEmail": intend_to_email}
+        data = {
+            "namespace": self.namespace,
+            "intents": list(map(lambda i: i.replace("_", ""), self.intents)),
+            "intentToEmail": intend_to_email}
 
         self._save_yaml_template('lexbot.yaml', "lexbot", data)

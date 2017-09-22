@@ -4,8 +4,8 @@ from .ExcelConverterBase import ExcelConverterBase
 
 
 class BotJsonConverter(ExcelConverterBase):
-    def __init__(self, workbook, lexjson_dir):
-        super(BotJsonConverter, self).__init__(workbook, lexjson_dir)
+    def __init__(self, workbook_path_name, lexjson_dir):
+        super(BotJsonConverter, self).__init__(workbook_path_name, lexjson_dir)
 
     def _generate_bot_json(self, sheet_name: str):
         data = {
@@ -14,8 +14,7 @@ class BotJsonConverter(ExcelConverterBase):
             "clarificationPrompt": "B3"
         }
         data = self.populate_simple_cell_data(sheet_name, data)
-        data["intents"] = [json.dumps(elem) for elem in self.worksheets if
-                           elem.endswith("Intent")]
+        data["intents"] = [json.dumps(elem) for elem in self.intents]
         self._save_json_template('bot.json', sheet_name, data)
 
     def generate_json(self):

@@ -15,6 +15,8 @@ tmp_folder = "/tmp/"
 
 
 def lambda_handler(event, context):
+
+
     def get_object_information():
         record = event['Records'][0]
         return record['s3']['bucket']['name'], record['s3']['object']['key'], record["eventName"]
@@ -44,6 +46,9 @@ def create_excel_lex_chatbot_stack(aws_account, source_bucket, stack_name, xlsx_
     json_base_folder = os.path.join(tmp_folder, "json")
     json_output = os.path.join(tmp_folder, "json", "lexjson")
     deployment_output = os.path.join(tmp_folder, "deployment")
+
+
+
     assure_path_exists(json_base_folder)
     assure_path_exists(json_output)
     assure_path_exists(deployment_output)
@@ -106,8 +111,10 @@ def create_excel_lex_chatbot_stack(aws_account, source_bucket, stack_name, xlsx_
 
 def assure_path_exists(path):
     newdir = os.path.dirname(path + "/")
-    if not os.path.exists(newdir):
-        os.makedirs(newdir)
+    if os.path.exists(newdir):
+        import shutil
+        shutil.rmtree(newdir)
+    os.makedirs(newdir)
 
 
 def upload_to_s3(bucket: str, file_path_name: str):

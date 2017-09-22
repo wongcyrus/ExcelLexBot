@@ -9,22 +9,27 @@ from openpyxl import load_workbook
 
 
 class ExcelConverterBase(object):
-    def __init__(self, workbook, lexjson_dir):
+    def __init__(self, workbook_path_name, lexjson_dir):
         dir_path = os.path.dirname(os.path.abspath(__file__))
         self.data = []
         self.templateDir = os.path.join(dir_path, "template")
         self.outputDir = lexjson_dir
         # todo: refactor into json generator and builder base.
-        if workbook is not None:
-            self.wb = load_workbook(workbook)
+        if workbook_path_name is not None:
+            self.wb = load_workbook(workbook_path_name)
             self.worksheets = self.wb.get_sheet_names()
+            self.namespace = os.path.splitext(os.path.basename(workbook_path_name))[0]
+            self.intents = [self.namespace + "_" + elem for elem in self.worksheets if elem.endswith("Intent")]
+            self.slot_types = [self.namespace + "_" + elem for elem in self.worksheets if elem.endswith("Type")]
+            self.bots = [self.namespace + "_" + elem for elem in self.worksheets if elem.endswith("Bot")]
         else:
             self.wb = None
             files = os.listdir(os.path.join(dir_path, lexjson_dir))
             self.worksheets = [os.path.splitext(os.path.basename(fn))[0] for fn in files]
-        self.intents = [elem for elem in self.worksheets if elem.endswith("Intent")]
-        self.slot_types = [elem for elem in self.worksheets if elem.endswith("Type")]
-        self.bots = [elem for elem in self.worksheets if elem.endswith("Bot")]
+            self.namespace = [x for x in self.worksheets if "_" in x][0].split("_")[0]
+            self.intents = [elem for elem in self.worksheets if elem.endswith("Intent")]
+            self.slot_types = [elem for elem in self.worksheets if elem.endswith("Type")]
+            self.bots = [elem for elem in self.worksheets if elem.endswith("Bot")]
 
     @staticmethod
     def __get_ascii_only_json_str(c: str):
@@ -92,9 +97,12 @@ class ExcelConverterBase(object):
             return [self.__get_ascii_only_json_str(content)]
 
     def _get_single_value_cell_data(self, sheet_name: str, data: dict):
-        worksheet = self.wb[sheet_name]
+        worksheet = self._get_worksheet(sheet_name)
         data = dict(map(lambda item: (item[0], self._get_cell_value(worksheet, item[1])), data.items()))
         return data
+
+    def _get_worksheet(self, sheet_name):
+        return self.wb[sheet_name.split("_")[1]]
 
     @abstractmethod
     def generate_json(self):

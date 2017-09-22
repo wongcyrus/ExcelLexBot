@@ -70,7 +70,7 @@ def call_lambda(event, function_name, function_set):
 
 
 def save_fulfillment(table_name: str, event):
-    table = dynamodb.Table(table_name)
+    table = dynamodb.Table(table_name.replace("_", ""))
     data = get_save_data(event)
     table.put_item(
         Item=data
@@ -78,7 +78,7 @@ def save_fulfillment(table_name: str, event):
 
 
 def publish_to_sns(intend: str, event: dict, aws_account_id: str):
-    arn = "arn:aws:sns:{0}:{1}:{2}SNSTopic".format(region, aws_account_id, intend)
+    arn = "arn:aws:sns:{0}:{1}:{2}SNSTopic".format(region, aws_account_id, intend.replace("_", ""))
     data = get_save_data(event)
     data = json.dumps({"default": ''.join('{} : {} \n'.format(key, val) for key, val in data.items())})
     try:

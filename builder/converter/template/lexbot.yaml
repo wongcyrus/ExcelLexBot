@@ -39,7 +39,7 @@ Resources:
   LexDispatcherFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: LexDispatcher
+      FunctionName: {{namespace}}LexDispatcher
       Description: Lex Dispatcher
       Handler: dispatcher.lambda_handler
       Runtime: python3.6
