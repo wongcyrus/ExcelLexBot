@@ -22,7 +22,6 @@ Resources:
       Policies:
         - AWSXrayWriteOnlyAccess
         - AWSLambdaExecute
-        - AWSLambdaBasicExecutionRole
         - AmazonLexFullAccess
         - AmazonSNSFullAccess
         - AmazonDynamoDBFullAccess

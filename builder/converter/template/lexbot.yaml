@@ -17,7 +17,6 @@ Resources:
       Policies:
         - AWSXrayWriteOnlyAccess
         - AWSLambdaExecute
-        - AWSLambdaBasicExecutionRole
         - AmazonS3ReadOnlyAccess
         - AmazonLexFullAccess
       CodeUri:
@@ -49,7 +48,6 @@ Resources:
       Policies:
         - AWSXrayWriteOnlyAccess
         - AWSLambdaExecute
-        - AWSLambdaBasicExecutionRole
         - Version: 2012-10-17
           Statement:
             - Effect: Allow

@@ -50,7 +50,8 @@ if __name__ == '__main__':
         shell=True, check=True)
     subprocess.run(
         "aws cloudformation deploy --template-file ./deployment/excellexbot_packaged.yaml --stack-name excellexbot"
-        " --capabilities CAPABILITY_IAM".format(source_bucket),
+        " --parameter-overrides SourceBucket={0} ExcelBucketName={1}"
+        " --capabilities CAPABILITY_IAM".format(source_bucket,"excellexbotdemo1"),
         shell=True, check=True)
 
     print("Deploy Code hook")
