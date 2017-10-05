@@ -1,0 +1,111 @@
+{
+    "name": "ChatBot_MakeAppointmentIntent",
+    "description": "Intent to make appointment",
+    "slots": [
+        {
+            "slotType": "ChatBot_AppointmentType",
+            "name": "AppointmentType",
+            "slotConstraint": "Required",
+            "valueElicitationPrompt": {
+                "maxAttempts": 2,
+                "messages": [
+                    {
+                        "content": "What type of appointment would you like to schedule?",
+                        "contentType": "PlainText"
+                    }
+                ]
+            },
+            "priority": 1,
+            "description": "The type of flowers to pick up",
+            "sampleUtterances": [
+                "I would like a {AppointmentType}"
+            ],
+            "slotTypeVersion": "$LATEST"
+        },
+        {
+            "slotType": "AMAZON.DATE",
+            "name": "Date",
+            "slotConstraint": "Required",
+            "valueElicitationPrompt": {
+                "maxAttempts": 2,
+                "messages": [
+                    {
+                        "content": "When should I schedule your appointment?",
+                        "contentType": "PlainText"
+                    },
+                    {
+                        "content": "When should I schedule your {AppointmentType}?",
+                        "contentType": "PlainText"
+                    },
+                    {
+                        "content": "{Time} on what day?",
+                        "contentType": "PlainText"
+                    },
+                    {
+                        "content": "A {AppointmentType} will take about [ExpectedDuration] minutes. What day works best for you?",
+                        "contentType": "PlainText"
+                    }
+                ]
+            },
+            "priority": 2,
+            "description": "The date to pick up the flowers"
+        },
+        {
+            "slotType": "AMAZON.TIME",
+            "name": "Time",
+            "slotConstraint": "Required",
+            "valueElicitationPrompt": {
+                "maxAttempts": 2,
+                "messages": [
+                    {
+                        "content": "At what time on {Date}?",
+                        "contentType": "PlainText"
+                    },
+                    {
+                        "content": "When should I schedule your {AppointmentType}?",
+                        "contentType": "PlainText"
+                    },
+                    {
+                        "content": "At what time should I schedule your appointment?",
+                        "contentType": "PlainText"
+                    }
+                ]
+            },
+            "priority": 3,
+            "description": "The time to pick up the flowers"
+        }
+    ],
+    "confirmationPrompt": {
+        "maxAttempts": 2,
+        "messages": [
+            {
+                "content": "{Time} is available, should I go ahead and book your appointment?",
+                "contentType": "PlainText"
+            }
+        ]
+    },
+    "rejectionStatement": {
+        "messages": [
+            {
+                "content": "Okay, I will not schedule an appointment.",
+                "contentType": "PlainText"
+            }
+        ]
+    },
+    "sampleUtterances": [
+        "I would like to book an appointment",
+        "Book an appointment",
+        "Book a {AppointmentType}"
+    ],
+    "dialogCodeHook": {
+        "uri": "arn:aws:lambda:us-east-1:894598711988:function:ChatBotLexDispatcher",
+        "messageVersion": "1.0"
+    },
+    "fulfillmentActivity": {
+        "type": "CodeHook",
+        "codeHook": {
+            "uri": "arn:aws:lambda:us-east-1:894598711988:function:ChatBotLexDispatcher",
+            "messageVersion": "1.0"
+        }
+    }
+}

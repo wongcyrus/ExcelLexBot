@@ -1,0 +1,16 @@
+{
+    "name": "ChatBot_AppointmentType",
+    "description": "Type of dentist appointment to schedule",
+    "valueSelectionStrategy": "TOP_RESOLUTION",
+    "enumerationValues": [
+        {
+            "value": "cleaning"
+        },
+        {
+            "value": "whitening"
+        },
+        {
+            "value": "root canal"
+        }
+    ]
+}

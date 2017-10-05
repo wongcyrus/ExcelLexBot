@@ -1,0 +1,282 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  SourceBucket:
+    Type: String
+    Default: howwhofeelinvideopackage
+Resources:
+# custom resource to create Lex component from excel
+  LexBuilderCustomReseourcesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: lex_customer_resources.lambda_handler
+      Runtime: python3.6
+      MemorySize: 512
+      Timeout: 300
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - AWSLambdaExecute
+        - AmazonS3ReadOnlyAccess
+        - AmazonLexFullAccess
+      CodeUri:
+        Bucket: !Ref SourceBucket
+        Key: !Sub code/${AWS::StackName}.zip
+
+  LexBuilderCustomReseources:
+    Type: Custom::LexBuilder
+    DependsOn:
+      - LexBuilderCustomReseourcesFunction
+      - LexDispatcherLambdaInvokePermission
+    Version: 1.0
+    Properties:
+      ServiceToken: !GetAtt LexBuilderCustomReseourcesFunction.Arn
+      StackName:
+        Ref: AWS::StackName
+      SourceBucket: !Ref SourceBucket
+
+  LexDispatcherFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ChatBotLexDispatcher
+      Description: Lex Dispatcher
+      Handler: dispatcher.lambda_handler
+      Runtime: python3.6
+      MemorySize: 512
+      Timeout: 300
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - AWSLambdaExecute
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - lambda:InvokeFunction
+                - lambda:ListFunctions
+                - lambda:GetFunction
+              Resource: "*"
+            - Effect: Allow
+              Action:
+                - dynamodb:PutItem
+              Resource:
+#    
+                - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/ChatBotOrderFlowersIntent
+#    
+                - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/ChatBotMakeAppointmentIntent
+#    
+            - Effect: Allow
+              Action:
+                - sns:Publish
+              Resource:
+#    
+                - !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:ChatBotOrderFlowersIntentSNSTopic
+#    
+                - !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:ChatBotMakeAppointmentIntentSNSTopic
+#    
+      CodeUri:
+        Bucket: !Ref SourceBucket
+        Key: !Sub code/${AWS::StackName}.zip
+
+  LexDispatcherLambdaInvokePermission:
+    DependsOn: LexDispatcherFunction
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref LexDispatcherFunction
+      Action: lambda:InvokeFunction
+      Principal: lex.amazonaws.com
+      SourceArn: !Sub arn:aws:lex:${AWS::Region}:${AWS::AccountId}:intent:*:*
+
+#    
+  ChatBotOrderFlowersIntentTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ChatBotOrderFlowersIntent
+      AttributeDefinitions:
+        -
+          AttributeName: userId
+          AttributeType: S
+        -
+          AttributeName: createAt
+          AttributeType: S
+      KeySchema:
+        -
+          AttributeName: userId
+          KeyType: HASH
+        -
+          AttributeName: createAt
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  ChatBotOrderFlowersIntentTabbleWriteScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MinCapacity: 1
+      MaxCapacity: 50
+      ResourceId: !Sub table/${ChatBotOrderFlowersIntentTable}
+      RoleARN: !GetAtt DynamoDBAutoscalingRole.Arn
+      ScalableDimension: dynamodb:table:WriteCapacityUnits
+      ServiceNamespace: dynamodb
+
+  ChatBotOrderFlowersIntentTableWriteScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: TableWriteScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: !Ref ChatBotOrderFlowersIntentTabbleWriteScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBWriteCapacityUtilization
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        TargetValue: 75
+
+  ChatBotOrderFlowersIntentTabbleReadScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MinCapacity: 1
+      MaxCapacity: 50
+      ResourceId: !Sub table/${ChatBotOrderFlowersIntentTable}
+      RoleARN: !GetAtt DynamoDBAutoscalingRole.Arn
+      ScalableDimension: dynamodb:table:ReadCapacityUnits
+      ServiceNamespace: dynamodb
+
+  ChatBotOrderFlowersIntentTableReadScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: TableReadScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: !Ref ChatBotOrderFlowersIntentTabbleReadScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBReadCapacityUtilization
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        TargetValue: 75
+
+#    
+  ChatBotMakeAppointmentIntentTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: ChatBotMakeAppointmentIntent
+      AttributeDefinitions:
+        -
+          AttributeName: userId
+          AttributeType: S
+        -
+          AttributeName: createAt
+          AttributeType: S
+      KeySchema:
+        -
+          AttributeName: userId
+          KeyType: HASH
+        -
+          AttributeName: createAt
+          KeyType: RANGE
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+
+  ChatBotMakeAppointmentIntentTabbleWriteScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MinCapacity: 1
+      MaxCapacity: 50
+      ResourceId: !Sub table/${ChatBotMakeAppointmentIntentTable}
+      RoleARN: !GetAtt DynamoDBAutoscalingRole.Arn
+      ScalableDimension: dynamodb:table:WriteCapacityUnits
+      ServiceNamespace: dynamodb
+
+  ChatBotMakeAppointmentIntentTableWriteScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: TableWriteScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: !Ref ChatBotMakeAppointmentIntentTabbleWriteScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBWriteCapacityUtilization
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        TargetValue: 75
+
+  ChatBotMakeAppointmentIntentTabbleReadScalingTarget:
+    Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Properties:
+      MinCapacity: 1
+      MaxCapacity: 50
+      ResourceId: !Sub table/${ChatBotMakeAppointmentIntentTable}
+      RoleARN: !GetAtt DynamoDBAutoscalingRole.Arn
+      ScalableDimension: dynamodb:table:ReadCapacityUnits
+      ServiceNamespace: dynamodb
+
+  ChatBotMakeAppointmentIntentTableReadScalingPolicy:
+    Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Properties:
+      PolicyName: TableReadScalingPolicy
+      PolicyType: TargetTrackingScaling
+      ScalingTargetId: !Ref ChatBotMakeAppointmentIntentTabbleReadScalingTarget
+      TargetTrackingScalingPolicyConfiguration:
+        PredefinedMetricSpecification:
+          PredefinedMetricType: DynamoDBReadCapacityUtilization
+        ScaleInCooldown: 60
+        ScaleOutCooldown: 60
+        TargetValue: 75
+
+#    
+#    
+  ChatBotMakeAppointmentIntentSNSTopic:
+    Type: "AWS::SNS::Topic"
+    Properties:
+      Subscription:
+#      
+        -
+          Endpoint: "cywong@vtc.edu.hk"
+          Protocol: email
+#      
+        -
+          Endpoint: "abcd@gmail.com"
+          Protocol: email
+#      
+      TopicName: "ChatBotMakeAppointmentIntentSNSTopic"
+
+#    
+  DynamoDBAutoscalingRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - application-autoscaling.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: lambdaIAMRolePolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:DescribeTable
+                  - dynamodb:UpdateTable
+                Resource:
+                  - Fn::Join:
+                      - ""
+                      - - "arn:aws:dynamodb:"
+                        - !Ref AWS::Region
+                        - ":*:table/*"
+              - Effect: Allow
+                Action:
+                  - cloudwatch:DescribeAlarms
+                  - cloudwatch:PutMetricAlarm
+                  - cloudwatch:DeleteAlarms
+                Resource: "*"
+
+
+

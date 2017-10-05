@@ -1,0 +1,16 @@
+{
+    "name": "ChatBot_FlowerType",
+    "description": "Types of flowers to pick up",
+    "valueSelectionStrategy": "TOP_RESOLUTION",
+    "enumerationValues": [
+        {
+            "value": "tulips"
+        },
+        {
+            "value": "lilies"
+        },
+        {
+            "value": "roses"
+        }
+    ]
+}
