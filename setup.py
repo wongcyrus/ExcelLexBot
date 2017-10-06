@@ -6,7 +6,7 @@ import boto3
 
 
 def zip_dir(folders: list, dst):
-    zf = zipfile.ZipFile("%s.zip" % (dst), "w", zipfile.ZIP_DEFLATED)
+    zf = zipfile.ZipFile("%s.zip" % dst, "w", zipfile.ZIP_DEFLATED)
     for src in folders:
         abs_src = os.path.abspath(src)
         for dirname, subdirs, files in os.walk(src):

@@ -34,7 +34,6 @@ class ExcelConverterBase(object):
     @staticmethod
     def __get_ascii_only_json_str(c: str):
         a = codecs.encode(codecs.decode(c, 'unicode-escape'), 'ascii', 'ignore')
-        # print(type(a))
         return json.dumps(str(a, 'utf-8'), indent=4)
 
     def _render(self, filename: str, data: dict, is_json: bool) -> str:
@@ -61,27 +60,27 @@ class ExcelConverterBase(object):
         return data
 
     @staticmethod
-    def _get_cell_value(worksheet, address):
+    def _get_cell_value(worksheet, address, json_encode=True):
         val = str(worksheet[address].value)
-        if not val.isdigit():
+        if not val.isdigit() and json_encode:
             return json.dumps(val)
         return val
 
-    def _get_variable_length_column_data(self, column: int, start_row: int, worksheet):
+    def _get_variable_length_column_data(self, column: int, start_row: int, worksheet, json_encode=True):
         data = []
         i = start_row
         column = string.ascii_uppercase[column - 1]
         while worksheet[column + str(i)].value is not None and worksheet[column + str(i)].value:
-            data.append(self._get_cell_value(worksheet, column + str(i)))
+            data.append(self._get_cell_value(worksheet, column + str(i), json_encode))
             i = i + 1
         return data
 
-    def _get_variable_length_row_data(self, column: int, row: int, worksheet):
+    def _get_variable_length_row_data(self, column: int, row: int, worksheet, json_encode=True):
         data = []
         i = column
         column = string.ascii_uppercase[i - 1]
         while worksheet[column + str(row)].value is not None and worksheet[column + str(row)].value:
-            data.append(self._get_cell_value(worksheet, column + str(row)))
+            data.append(self._get_cell_value(worksheet, column + str(row), json_encode))
             i = i + 1
             column = string.ascii_uppercase[i - 1]
         return data
@@ -89,10 +88,12 @@ class ExcelConverterBase(object):
     def _get_newline_spilt_data(self, column: int, row: int, worksheet):
         i = column
         column = string.ascii_uppercase[i - 1]
-        content = self._get_cell_value(worksheet, column + str(row))[1:-1]
+        content = self._get_cell_value(worksheet, column + str(row), False)
+        return self._get_new_line_list(content)
 
-        if '\\n' in content:
-            return list(map(self.__get_ascii_only_json_str, content.split('\\n')))
+    def _get_new_line_list(self, content: str):
+        if '\n' in content:
+            return list(map(self.__get_ascii_only_json_str, content.split('\n')))
         else:
             return [self.__get_ascii_only_json_str(content)]
 

@@ -1,0 +1,20 @@
+{
+    "name": "ChatBot_GenresType",
+    "description": "Type of Genres",
+    "valueSelectionStrategy": "TOP_RESOLUTION",
+    "enumerationValues": [
+        {
+            "value": "comedy",
+            "synonyms": [
+                "funny",
+                "humorous"
+            ]
+        },
+        {
+            "value": "adventure"
+        },
+        {
+            "value": "documentary"
+        }
+    ]
+}

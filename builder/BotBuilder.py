@@ -64,7 +64,7 @@ if __name__ == "__main__":
     #                          os.path.join(os.getcwd(), "output"))
     # bot_builder.deploy_bot()
 
-    bot_builder1 = BotBuilder(os.path.join("../playground", "MakeAppointmentChatBot.xlsx"),
+    bot_builder1 = BotBuilder(os.path.join("../playground", "ChatBot.xlsx"),
                               os.path.join("../", "output"), " arn:aws:lambda:us-east-1:894598711988:function:")
     bot_builder1.generate_cloudformation_resources()
     # bot_builder1.deploy_bot()

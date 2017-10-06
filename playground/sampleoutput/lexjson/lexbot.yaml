@@ -233,7 +233,7 @@ Resources:
       Subscription:
 #      
         -
-          Endpoint: "cywong@vtc.edu.hk"
+          Endpoint: "abcd@abc.com"
           Protocol: email
 #      
         -

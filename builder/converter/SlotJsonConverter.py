@@ -13,10 +13,12 @@ class SlotJsonConverter(ExcelConverterBase):
         }
         data = self.populate_simple_cell_data(sheet_name, data)
 
-        slots = self._get_variable_length_column_data(2, 3, worksheet)
-        data["enumerationValues"] = slots
+        slots = self._get_variable_length_column_data(2, 3, worksheet, False)
+        data["enumerationValues"] = list(map(self._get_new_line_list, slots))
 
         self._save_json_template('slotType.json', sheet_name, data)
 
     def generate_json(self):
         list(map(self._generate_intent_slot_json, self.slot_types))
+
+
