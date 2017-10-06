@@ -16,7 +16,7 @@
                 ]
             },
             "priority": 1,
-            "description": "The type of flowers to pick up",
+            "description": "The type of appointment",
             "sampleUtterances": [
                 "I would like a {AppointmentType}"
             ],
@@ -48,7 +48,7 @@
                 ]
             },
             "priority": 2,
-            "description": "The date to pick up the flowers"
+            "description": "The date of appointment"
         },
         {
             "slotType": "AMAZON.TIME",
@@ -72,7 +72,7 @@
                 ]
             },
             "priority": 3,
-            "description": "The time to pick up the flowers"
+            "description": "The time of appointment"
         }
     ],
     "confirmationPrompt": {
