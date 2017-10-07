@@ -110,7 +110,7 @@ Resources:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
 
-  ChatBotOrderFlowersIntentTabbleWriteScalingTarget:
+  ChatBotOrderFlowersIntentTableWriteScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
       MinCapacity: 1
@@ -125,7 +125,7 @@ Resources:
     Properties:
       PolicyName: TableWriteScalingPolicy
       PolicyType: TargetTrackingScaling
-      ScalingTargetId: !Ref ChatBotOrderFlowersIntentTabbleWriteScalingTarget
+      ScalingTargetId: !Ref ChatBotOrderFlowersIntentTableWriteScalingTarget
       TargetTrackingScalingPolicyConfiguration:
         PredefinedMetricSpecification:
           PredefinedMetricType: DynamoDBWriteCapacityUtilization
@@ -133,7 +133,7 @@ Resources:
         ScaleOutCooldown: 60
         TargetValue: 75
 
-  ChatBotOrderFlowersIntentTabbleReadScalingTarget:
+  ChatBotOrderFlowersIntentTableReadScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
       MinCapacity: 1
@@ -148,7 +148,7 @@ Resources:
     Properties:
       PolicyName: TableReadScalingPolicy
       PolicyType: TargetTrackingScaling
-      ScalingTargetId: !Ref ChatBotOrderFlowersIntentTabbleReadScalingTarget
+      ScalingTargetId: !Ref ChatBotOrderFlowersIntentTableReadScalingTarget
       TargetTrackingScalingPolicyConfiguration:
         PredefinedMetricSpecification:
           PredefinedMetricType: DynamoDBReadCapacityUtilization
@@ -179,7 +179,7 @@ Resources:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
 
-  ChatBotMakeAppointmentIntentTabbleWriteScalingTarget:
+  ChatBotMakeAppointmentIntentTableWriteScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
       MinCapacity: 1
@@ -194,7 +194,7 @@ Resources:
     Properties:
       PolicyName: TableWriteScalingPolicy
       PolicyType: TargetTrackingScaling
-      ScalingTargetId: !Ref ChatBotMakeAppointmentIntentTabbleWriteScalingTarget
+      ScalingTargetId: !Ref ChatBotMakeAppointmentIntentTableWriteScalingTarget
       TargetTrackingScalingPolicyConfiguration:
         PredefinedMetricSpecification:
           PredefinedMetricType: DynamoDBWriteCapacityUtilization
@@ -202,7 +202,7 @@ Resources:
         ScaleOutCooldown: 60
         TargetValue: 75
 
-  ChatBotMakeAppointmentIntentTabbleReadScalingTarget:
+  ChatBotMakeAppointmentIntentTableReadScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
       MinCapacity: 1
@@ -217,7 +217,7 @@ Resources:
     Properties:
       PolicyName: TableReadScalingPolicy
       PolicyType: TargetTrackingScaling
-      ScalingTargetId: !Ref ChatBotMakeAppointmentIntentTabbleReadScalingTarget
+      ScalingTargetId: !Ref ChatBotMakeAppointmentIntentTableReadScalingTarget
       TargetTrackingScalingPolicyConfiguration:
         PredefinedMetricSpecification:
           PredefinedMetricType: DynamoDBReadCapacityUtilization

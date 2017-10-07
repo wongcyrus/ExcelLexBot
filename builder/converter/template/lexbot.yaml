@@ -111,7 +111,7 @@ Resources:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
 
-  {{ intent }}TabbleWriteScalingTarget:
+  {{ intent }}TableWriteScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
       MinCapacity: 1
@@ -126,7 +126,7 @@ Resources:
     Properties:
       PolicyName: TableWriteScalingPolicy
       PolicyType: TargetTrackingScaling
-      ScalingTargetId: !Ref {{ intent }}TabbleWriteScalingTarget
+      ScalingTargetId: !Ref {{ intent }}TableWriteScalingTarget
       TargetTrackingScalingPolicyConfiguration:
         PredefinedMetricSpecification:
           PredefinedMetricType: DynamoDBWriteCapacityUtilization
@@ -134,7 +134,7 @@ Resources:
         ScaleOutCooldown: 60
         TargetValue: 75
 
-  {{ intent }}TabbleReadScalingTarget:
+  {{ intent }}TableReadScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
     Properties:
       MinCapacity: 1
@@ -149,7 +149,7 @@ Resources:
     Properties:
       PolicyName: TableReadScalingPolicy
       PolicyType: TargetTrackingScaling
-      ScalingTargetId: !Ref {{ intent }}TabbleReadScalingTarget
+      ScalingTargetId: !Ref {{ intent }}TableReadScalingTarget
       TargetTrackingScalingPolicyConfiguration:
         PredefinedMetricSpecification:
           PredefinedMetricType: DynamoDBReadCapacityUtilization
