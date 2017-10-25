@@ -100,6 +100,7 @@ def get_save_data(event):
     data = event['currentIntent']['slots'].copy()
     data["createAt"] = str(datetime.datetime.now())
     data["userId"] = event["userId"]
+    data["sessionAttributes"] = event['sessionAttributes'].copy()
     return data
 
 
