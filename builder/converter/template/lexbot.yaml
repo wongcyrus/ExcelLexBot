@@ -4,6 +4,15 @@ Parameters:
   SourceBucket:
     Type: String
     Default: howwhofeelinvideopackage
+  DynamodbAutoScaling:
+    Type: String
+    Default: true
+    AllowedValues:
+      - true
+      - false
+    Description: Enable DynamoDB AutoScaling
+Conditions:
+  EnableDynamodbAutoscaling: !Equals [ !Ref DynamodbAutoScaling, true ]
 Resources:
 # custom resource to create Lex component from excel
   LexBuilderCustomReseourcesFunction:
@@ -113,6 +122,7 @@ Resources:
 
   {{ intent }}TableWriteScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Condition: EnableDynamodbAutoscaling
     Properties:
       MinCapacity: 1
       MaxCapacity: 50
@@ -123,6 +133,7 @@ Resources:
 
   {{ intent }}TableWriteScalingPolicy:
     Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Condition: EnableDynamodbAutoscaling
     Properties:
       PolicyName: TableWriteScalingPolicy
       PolicyType: TargetTrackingScaling
@@ -136,6 +147,7 @@ Resources:
 
   {{ intent }}TableReadScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget
+    Condition: EnableDynamodbAutoscaling
     Properties:
       MinCapacity: 1
       MaxCapacity: 50
@@ -146,6 +158,7 @@ Resources:
 
   {{ intent }}TableReadScalingPolicy:
     Type: AWS::ApplicationAutoScaling::ScalingPolicy
+    Condition: EnableDynamodbAutoscaling
     Properties:
       PolicyName: TableReadScalingPolicy
       PolicyType: TargetTrackingScaling
@@ -178,6 +191,7 @@ Resources:
 
   DynamoDBAutoscalingRole:
     Type: AWS::IAM::Role
+    Condition: EnableDynamodbAutoscaling
     Properties:
       AssumeRolePolicyDocument:
         Version: 2012-10-17

@@ -10,6 +10,7 @@ from BotBuilder import BotBuilder
 
 s3 = boto3.client('s3')
 region = os.environ['AWS_REGION']
+dynamodbAutoScaling = os.environ['DynamodbAutoScaling']
 cloudformation = boto3.client('cloudformation')
 tmp_folder = "/tmp/"
 
@@ -76,6 +77,10 @@ def create_excel_lex_chatbot_stack(aws_account, source_bucket, stack_name, xlsx_
             {
                 'ParameterKey': 'SourceBucket',
                 'ParameterValue': source_bucket,
+            },
+            {
+                'ParameterKey': 'DynamodbAutoScaling',
+                'ParameterValue': dynamodbAutoScaling,
             }
         ],
         Capabilities=[
