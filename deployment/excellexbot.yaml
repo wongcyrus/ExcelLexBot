@@ -2,12 +2,6 @@ AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 Description: Upload Excel xlsx to S3 and trigger Excel Lex Bot
 Parameters:
-  SourceBucket:
-    Type: String
-    Default: excellexbotdeployment
-  ExcelBucketName:
-    Type: String
-    Default: excellexbotdemo456
   DynamodbAutoScaling:
     Type: String
     Default: true
@@ -57,9 +51,7 @@ Resources:
       Environment:
         Variables:
           DynamodbAutoScaling: !Ref DynamodbAutoScaling
-      CodeUri:
-        Bucket: !Ref SourceBucket
-        Key: lex_builder_function.zip
+      CodeUri: ../venv/lib/python3.6/dist-packages
       Events:
         XlsxPut:
           Type: S3
