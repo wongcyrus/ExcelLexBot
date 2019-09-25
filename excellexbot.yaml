@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: Upload Excel xlsx to S3 and trigger Excel Lex Bot
+Parameters:
+  ExcelBucketName:
+    Type: String
+    Default: excellexbotdemo456
+  DynamodbAutoScaling:
+    Type: String
+    Default: true
+    AllowedValues:
+      - true
+      - false
+    Description: Enable DynamoDB AutoScaling
+Resources:
+  ExcelLexBotS3TriggerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ExcelLexBotS3Trigger
+      Description: Create Lex Chat Bot when upload xlsx file.
+      Handler: s3_trigger_handler.lambda_handler
+      Runtime: python3.6
+      MemorySize: 512
+      Timeout: 300
+      Tracing: Active
+      Layers:
+        - !Ref LibLayer  
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - AWSLambdaExecute
+        - AmazonLexFullAccess
+        - AmazonSNSFullAccess
+        - AmazonDynamoDBFullAccess
+        - AWSLambdaFullAccess
+        - Version: 2012-10-17
+          Statement:
+            - Effect: Allow
+              Action:
+                - cloudformation:CreateStack
+                - cloudformation:DescribeChangeSet
+                - cloudformation:CreateChangeSet
+                - cloudformation:DeleteChangeSet
+                - cloudformation:DeleteStack
+                - cloudformation:ExecuteChangeSet
+                - cloudwatch:DescribeAlarms
+                - cloudwatch:PutMetricAlarm
+                - cloudwatch:DeleteAlarms
+                - iam:CreateRole
+                - iam:DeleteRole
+                - iam:AttachRolePolicy
+                - iam:DetachRolePolicy
+                - iam:PutRolePolicy
+                - iam:DeleteRolePolicy
+                - iam:PassRole
+              Resource: "*"
+      Environment:
+        Variables:
+          DynamodbAutoScaling: !Ref DynamodbAutoScaling
+          LibLayer: !Ref LibLayer
+      CodeUri: builder/
+      Events:
+        XlsxPut:
+          Type: S3
+          Properties:
+            Bucket: !Ref Bucket
+            Events: s3:ObjectCreated:Put
+            Filter:
+              S3Key:
+                Rules:
+                  -
+                    Name: suffix
+                    Value: .xlsx
+        XlsxDelete:
+          Type: S3
+          Properties:
+            Bucket: !Ref Bucket
+            Events: s3:ObjectRemoved:Delete
+            Filter:
+              S3Key:
+                Rules:
+                  -
+                    Name: suffix
+                    Value: .xlsx
+
+  LibLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      ContentUri: lib
+      CompatibleRuntimes:
+        - python3.7
+      LicenseInfo: 'Available under the MIT-0 license.'
+      RetentionPolicy: Delete  
+      
+  Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Ref ExcelBucketName

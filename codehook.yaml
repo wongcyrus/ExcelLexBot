@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: Demo Code Hook MakeAppointmentIntend in Excel Lex Bot.
+Resources:
+  ApponintmemtFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ChatBot_MakeAppointmentIntent
+      Description: Schedule a dentist appointment, using Amazon Lex to perform natural language understanding
+      Handler: appointment.lambda_handler
+      Runtime: python3.6
+      MemorySize: 512
+      Timeout: 300
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - AWSLambdaExecute
+        - AmazonS3ReadOnlyAccess
+        - AmazonLexRunBotsOnly
+      CodeUri: codehook/
+
+  ApponintmemtBFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ChatBotb_MakeAppointmentIntent
+      Description: Schedule a dentist appointment, using Amazon Lex to perform natural language understanding
+      Handler: appointment.lambda_handler
+      Runtime: python3.6
+      MemorySize: 512
+      Timeout: 300
+      Tracing: Active
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - AWSLambdaExecute
+        - AmazonS3ReadOnlyAccess
+        - AmazonLexRunBotsOnly
+      CodeUri: codehook/
+
