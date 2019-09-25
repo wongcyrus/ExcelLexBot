@@ -1,3 +1,5 @@
+import sys
+sys.path.append("/opt/")
 import json
 import os
 import time
@@ -11,7 +13,8 @@ def lambda_handler(event, context):
     print("Event: %s" % event)
 
     try:
-        lambda_arn_prefix = context.invoked_function_arn.rsplit(':', 1)[0] + ":"
+        lambda_arn_prefix = context.invoked_function_arn.rsplit(':',
+                                                                1)[0] + ":"
         path = os.path.abspath(__file__)
         dir_path = os.path.dirname(path)
         template_dir = os.path.join(dir_path, "lexjson")

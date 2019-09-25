@@ -13,17 +13,17 @@ sns = boto3.client('sns')
 
 def lambda_handler(event, context):
     print("Event: %s" % event)
-    response = lambda_client.list_functions(
-        MaxItems=100
-    )
+    response = lambda_client.list_functions(MaxItems=100)
 
     aws_account_id = context.invoked_function_arn.split(":")[4]
 
-    function_set = set(map(lambda f: f.get("FunctionName"), response.get("Functions")))
+    function_set = set(
+        map(lambda f: f.get("FunctionName"), response.get("Functions")))
     print(function_set)
 
     source = event['invocationSource']
-    output_session_attributes = event['sessionAttributes'] if event['sessionAttributes'] is not None else {}
+    output_session_attributes = event[
+        'sessionAttributes'] if event['sessionAttributes'] is not None else {}
     slots = event['currentIntent']['slots']
 
     intent_name = event['currentIntent']['name']
@@ -35,19 +35,16 @@ def lambda_handler(event, context):
         save_fulfillment(intent_name, event)
         publish_to_sns(intent_name, event, aws_account_id)
 
-    responses = list(map(lambda x: call_lambda(event, x, function_set), code_hooks))
+    responses = list(
+        map(lambda x: call_lambda(event, x, function_set), code_hooks))
     if all(v is None for v in responses):
         if source == 'DialogCodeHook':
             return delegate(output_session_attributes, slots)
         elif source == 'FulfillmentCodeHook':
-            return close(
-                output_session_attributes,
-                'Fulfilled',
-                {
-                    'contentType': 'PlainText',
-                    'content': 'Okay, thank you!'
-                }
-            )
+            return close(output_session_attributes, 'Fulfilled', {
+                'contentType': 'PlainText',
+                'content': 'Okay, thank you!'
+            })
     else:
         # get Code Hook response.
         response = [x for x in responses if x is not None].pop()
@@ -57,11 +54,9 @@ def lambda_handler(event, context):
 
 def call_lambda(event, function_name, function_set):
     if function_name in function_set:
-        response = lambda_client.invoke(
-            FunctionName=function_name,
-            InvocationType='RequestResponse',
-            Payload=json.dumps(event)
-        )
+        response = lambda_client.invoke(FunctionName=function_name,
+                                        InvocationType='RequestResponse',
+                                        Payload=json.dumps(event))
         data = json.loads(response['Payload'].read().decode("utf-8"))
         print(data)
         return data
@@ -72,22 +67,22 @@ def call_lambda(event, function_name, function_set):
 def save_fulfillment(table_name: str, event):
     table = dynamodb.Table(table_name.replace("_", ""))
     data = get_save_data(event)
-    table.put_item(
-        Item=data
-    )
+    table.put_item(Item=data)
 
 
 def publish_to_sns(intend: str, event: dict, aws_account_id: str):
-    arn = "arn:aws:sns:{0}:{1}:{2}SNSTopic".format(region, aws_account_id, intend.replace("_", ""))
+    arn = "arn:aws:sns:{0}:{1}:{2}SNSTopic".format(region, aws_account_id,
+                                                   intend.replace("_", ""))
     data = get_save_data(event)
-    data = json.dumps({"default": ''.join('{} : {} \n'.format(key, val) for key, val in data.items())})
+    data = json.dumps({
+        "default":
+        ''.join('{} : {} \n'.format(key, val) for key, val in data.items())
+    })
     try:
-        sns.publish(
-            TopicArn=arn,
-            Message=data,
-            Subject="New message from " + intend,
-            MessageStructure='json'
-        )
+        sns.publish(TopicArn=arn,
+                    Message=data,
+                    Subject="New message from " + intend,
+                    MessageStructure='json')
         print("sns:\n" + data)
     except ClientError as e:
         if e.response['Error']['Code'] == 'NotFoundException':

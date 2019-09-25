@@ -20,4 +20,16 @@ https://aws.amazon.com/jp/blogs/news/build-an-amazon-lex-chatbot-with-microsoft-
 
 https://aws.amazon.com/cn/blogs/china/build-an-amazon-lex-chatbot-with-microsoft-excel/
 
+#Deployment has been updated!
+
+It needs to AWS SAM deploy.
+
+Install the latest AWS SAM CLI in Cloud9
+git clone https://github.com/wongcyrus/ExcelLexBot
+cd ExcelLexBot
+./setup.sh
+sudo ./get_layer_packages.sh
+./deployment.sh
+
+
 

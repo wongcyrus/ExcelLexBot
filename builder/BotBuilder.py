@@ -1,3 +1,5 @@
+import sys
+sys.path.append("/opt/")
 import json
 import os
 
@@ -12,7 +14,8 @@ from converter.SlotJsonConverter import SlotJsonConverter
 class BotBuilder:
     def __init__(self, workbook, output_dir, lambda_arn_prefix):
         self.slotJConverter = SlotJsonConverter(workbook, output_dir)
-        self.intentConverter = IntentConverter(workbook, output_dir, lambda_arn_prefix)
+        self.intentConverter = IntentConverter(workbook, output_dir,
+                                               lambda_arn_prefix)
         self.botJConverter = BotJsonConverter(workbook, output_dir)
         self.output_dir = output_dir
         self.lambda_arn_prefix = lambda_arn_prefix
@@ -35,11 +38,17 @@ class BotBuilder:
             print(e)
 
     def deploy_bot(self):
-        list(map((lambda x: self.__build_lex_component(x, self.client.put_slot_type)), self.botJConverter.slot_types))
+        list(
+            map((lambda x: self.__build_lex_component(
+                x, self.client.put_slot_type)), self.botJConverter.slot_types))
         time.sleep(2)
-        list(map((lambda x: self.__build_lex_component(x, self.client.put_intent)), self.botJConverter.intents))
+        list(
+            map((lambda x: self.__build_lex_component(
+                x, self.client.put_intent)), self.botJConverter.intents))
         time.sleep(5)
-        list(map((lambda x: self.__build_lex_component(x, self.client.put_bot)), self.botJConverter.bots))
+        list(
+            map((lambda x: self.__build_lex_component(x, self.client.put_bot)),
+                self.botJConverter.bots))
 
     def generate_cloudformation_resources(self):
         self.slotJConverter.generate_json()
@@ -64,8 +73,10 @@ if __name__ == "__main__":
     #                          os.path.join(os.getcwd(), "output"))
     # bot_builder.deploy_bot()
 
-    bot_builder1 = BotBuilder(os.path.join("../playground", "ChatBot.xlsx"),
-                              os.path.join("../", "output"), " arn:aws:lambda:us-east-1:894598711988:function:")
+    bot_builder1 = BotBuilder(
+        os.path.join("../playground", "ChatBot.xlsx"),
+        os.path.join("../", "output"),
+        " arn:aws:lambda:us-east-1:894598711988:function:")
     bot_builder1.generate_cloudformation_resources()
     # bot_builder1.deploy_bot()
     # time.sleep(10)

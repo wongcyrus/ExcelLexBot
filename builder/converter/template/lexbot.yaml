@@ -3,7 +3,6 @@ Transform: AWS::Serverless-2016-10-31
 Parameters:
   SourceBucket:
     Type: String
-    Default: howwhofeelinvideopackage
   DynamodbAutoScaling:
     Type: String
     Default: true
@@ -11,6 +10,8 @@ Parameters:
       - true
       - false
     Description: Enable DynamoDB AutoScaling
+  LibLayer:
+    Type: String    
 Conditions:
   EnableDynamodbAutoscaling: !Equals [ !Ref DynamodbAutoScaling, true ]
 Resources:
@@ -23,6 +24,8 @@ Resources:
       MemorySize: 512
       Timeout: 300
       Tracing: Active
+      Layers:
+        - !Ref LibLayer 
       Policies:
         - AWSXrayWriteOnlyAccess
         - AWSLambdaExecute
@@ -54,6 +57,8 @@ Resources:
       MemorySize: 512
       Timeout: 300
       Tracing: Active
+      Layers:
+        - !Ref LibLayer 
       Policies:
         - AWSXrayWriteOnlyAccess
         - AWSLambdaExecute
@@ -102,6 +107,11 @@ Resources:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: {{ intent }}
+      BillingMode:
+        Fn::If:
+        - EnableDynamodbAutoscaling
+        - Ref: AWS::NoValue
+        - PAY_PER_REQUEST
       AttributeDefinitions:
         -
           AttributeName: userId
@@ -117,8 +127,12 @@ Resources:
           AttributeName: createAt
           KeyType: RANGE
       ProvisionedThroughput:
-        ReadCapacityUnits: 5
-        WriteCapacityUnits: 5
+        Fn::If:
+          - EnableDynamodbAutoscaling
+          -         
+            ReadCapacityUnits: 5
+            WriteCapacityUnits: 5
+          - Ref: AWS::NoValue
 
   {{ intent }}TableWriteScalingTarget:
     Type: AWS::ApplicationAutoScaling::ScalableTarget

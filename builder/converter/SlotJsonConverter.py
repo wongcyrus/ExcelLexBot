@@ -1,9 +1,12 @@
+import sys
+sys.path.append("/opt/")
 from .ExcelConverterBase import ExcelConverterBase
 
 
 class SlotJsonConverter(ExcelConverterBase):
     def __init__(self, workbook_path_name, lexjson_dir):
-        super(SlotJsonConverter, self).__init__(workbook_path_name, lexjson_dir)
+        super(SlotJsonConverter, self).__init__(workbook_path_name,
+                                                lexjson_dir)
 
     def _generate_intent_slot_json(self, sheet_name: str):
         worksheet = self._get_worksheet(sheet_name)
@@ -20,5 +23,3 @@ class SlotJsonConverter(ExcelConverterBase):
 
     def generate_json(self):
         list(map(self._generate_intent_slot_json, self.slot_types))
-
-
