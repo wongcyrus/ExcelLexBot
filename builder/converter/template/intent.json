@@ -2,6 +2,7 @@
   "name": {{ name }},
   "description": {{ description }},
   "slots": {{ slots }},
+  {%if confirmationPrompt is not none %}
   "confirmationPrompt": {
     "maxAttempts": {{maxAttempts}},
     "messages": [
@@ -11,6 +12,8 @@
       }
     ]
   },
+  {% endif %}
+  {%if rejectionStatement is not none %}
   "rejectionStatement": {
     "messages": [
       {
@@ -19,6 +22,7 @@
       }
     ]
   },
+  {% endif %}
   "sampleUtterances": [
     {% for value in sampleUtterances %}
     {{ value }}

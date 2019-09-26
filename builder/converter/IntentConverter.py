@@ -21,6 +21,14 @@ class IntentConverter(ExcelConverterBase):
         }
         data = self.populate_simple_cell_data(sheet_name, data)
 
+        def none_string_to_none(myString):
+            return None if myString == '"None"' else myString
+
+        data["confirmationPrompt"] = none_string_to_none(
+            data["confirmationPrompt"])
+        data["rejectionStatement"] = none_string_to_none(
+            data["rejectionStatement"])
+
         sample_utterances = self._get_newline_spilt_data(2, 5, worksheet)
         data["sampleUtterances"] = sample_utterances
 
