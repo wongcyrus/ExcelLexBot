@@ -43,7 +43,7 @@ def lambda_handler(event, context):
         elif source == 'FulfillmentCodeHook':
             return close(output_session_attributes, 'Fulfilled', {
                 'contentType': 'PlainText',
-                'content': 'Okay, thank you!'
+                'content': 'Okay!'
             })
     else:
         # get Code Hook response.
