@@ -16,7 +16,6 @@ Resources:
   ExcelLexBotS3TriggerFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: ExcelLexBotS3Trigger
       Description: Create Lex Chat Bot when upload xlsx file.
       Handler: s3_trigger_handler.lambda_handler
       Runtime: python3.6

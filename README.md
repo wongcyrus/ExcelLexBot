@@ -37,5 +37,9 @@ sudo ./get_layer_packages.sh
 ./deployment.sh
 
 
+## userId overriding logic 
+If you put userId in session, it will use the userId in session and save to DynamoDB.
+
+
 
 
