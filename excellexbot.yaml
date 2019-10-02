@@ -18,7 +18,7 @@ Resources:
     Properties:
       Description: Create Lex Chat Bot when upload xlsx file.
       Handler: s3_trigger_handler.lambda_handler
-      Runtime: python3.6
+      Runtime: python3.7
       MemorySize: 512
       Timeout: 300
       Tracing: Active
