@@ -2,6 +2,9 @@
   "name": {{ name }},
   "description": {{ description }},
   "slots": {{ slots }},
+  {%if parentIntentSignature is defined %}
+  "parentIntentSignature": {{parentIntentSignature}},
+  {% endif %}  
   {%if confirmationPrompt is not none %}
   "confirmationPrompt": {
     "maxAttempts": {{maxAttempts}},
@@ -23,6 +26,7 @@
     ]
   },
   {% endif %}
+  {%if parentIntentSignature is not defined %}
   "sampleUtterances": [
     {% for value in sampleUtterances %}
     {{ value }}
@@ -30,16 +34,19 @@
     {%- endif %}
     {% endfor %}
   ],
+  {% endif %}
+  {%if dialogCodeHook is defined %}
   "dialogCodeHook":{
       "uri": {{lexDispatcher}},
       "messageVersion": "1.0"
   },
+  {% endif %}  
   "fulfillmentActivity":
-    {
-      "type": "CodeHook",
-      "codeHook": {
-            "uri": {{lexDispatcher}},
-            "messageVersion": "1.0"
-       }
-    }
+  {
+    "type": "CodeHook",
+    "codeHook": {
+          "uri": {{lexDispatcher}},
+          "messageVersion": "1.0"
+     }
+  }
 }

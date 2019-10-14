@@ -17,6 +17,9 @@ class BotJsonConverter(ExcelConverterBase):
         }
         data = self.populate_simple_cell_data(sheet_name, data)
         data["intents"] = [json.dumps(elem) for elem in self.intents]
+
+        data["clarificationPrompt"] = self.none_string_to_none(
+            data["clarificationPrompt"])
         self._save_json_template('bot.json', sheet_name, data)
 
     def generate_json(self):

@@ -21,12 +21,9 @@ class IntentConverter(ExcelConverterBase):
         }
         data = self.populate_simple_cell_data(sheet_name, data)
 
-        def none_string_to_none(myString):
-            return None if myString == '"None"' else myString
-
-        data["confirmationPrompt"] = none_string_to_none(
+        data["confirmationPrompt"] = self.none_string_to_none(
             data["confirmationPrompt"])
-        data["rejectionStatement"] = none_string_to_none(
+        data["rejectionStatement"] = self.none_string_to_none(
             data["rejectionStatement"])
 
         sample_utterances = self._get_newline_spilt_data(2, 5, worksheet)
@@ -91,6 +88,14 @@ class IntentConverter(ExcelConverterBase):
         data["slots"] = json.dumps(list(map(get_slot, slots)))
         data[
             "lexDispatcher"] = "\"" + self.lambda_arn_prefix + self.namespace + "LexDispatcher\""
+
+        data["dialogCodeHook"] = True
+        if "AMAZON" in sheet_name:
+            data["parentIntentSignature"] = json.dumps(
+                sheet_name.replace("AMAZON", "AMAZON.").split("_")[1])
+            data["name"] = data["name"]
+            if '"AMAZON.FallbackIntent"' == data["parentIntentSignature"]:
+                del data["dialogCodeHook"]
 
         self._save_json_template('intent.json', sheet_name, data)
 

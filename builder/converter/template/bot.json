@@ -20,6 +20,7 @@
       }
     ]
   },
+  {%if clarificationPrompt is not none %}
   "clarificationPrompt": {
     "maxAttempts": 2,
     "messages": [
@@ -29,6 +30,7 @@
       }
     ]
   },
+  {% endif %} 
   "voiceId": "Salli",
   "childDirected": false,
   "idleSessionTTLInSeconds": 600

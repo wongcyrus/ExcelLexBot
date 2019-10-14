@@ -97,6 +97,7 @@ def create_excel_lex_chatbot_stack(aws_account, source_bucket, stack_name,
     execution_status = 'UNAVAILABLE'
     for i in range(1, 10):
         sleep(5)
+        print(execution_status)
         response = cloudformation.describe_change_set(
             ChangeSetName=change_set_name, StackName=stack_name)
         execution_status = response["ExecutionStatus"]

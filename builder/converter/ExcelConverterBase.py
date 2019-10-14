@@ -66,6 +66,7 @@ class ExcelConverterBase(object):
             template = str.encode(template, 'utf-8')
             template = template.decode('unicode_escape').encode(
                 'ascii', 'ignore')
+            print(template)
             return json.dumps(json.loads(template), indent=4)
         else:
             return template
@@ -88,6 +89,10 @@ class ExcelConverterBase(object):
         data = self._get_single_value_cell_data(sheet_name, data)
         data["name"] = json.dumps(sheet_name)
         return data
+
+    @staticmethod
+    def none_string_to_none(myString):
+        return None if myString == '"None"' else myString
 
     @staticmethod
     def _get_cell_value(worksheet, address, json_encode=True):
