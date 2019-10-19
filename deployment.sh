@@ -4,7 +4,8 @@ export REGION=$AWS_DEFAULT_REGION
 
 echo "Deploy $STACK_NAME stack at $REGION region"
 
-sourcebucket=excellexbotsource$STACK_NAME
+sourcebucket=excellexbotsource$UNIQUE_ID
+
 aws s3 mb s3://$sourcebucket --region $REGION 
 rm excellexbotpackage.yaml
 sam package --template-file excellexbot.yaml --s3-bucket $sourcebucket --output-template-file excellexbotpackage.yaml
