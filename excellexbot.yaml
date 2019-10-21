@@ -17,7 +17,7 @@ Metadata:
     SpdxLicenseId: Apache-2.0
     LicenseUrl: LICENSE.txt
     ReadmeUrl: README.md
-    Labels: ['Amazon Lex']
+    Labels: ['Lex']
     HomePageUrl: https://github.com/wongcyrus/ExcelLexBot
     SemanticVersion: 0.0.1
     SourceCodeUrl: https://github.com/wongcyrus/ExcelLexBot   
