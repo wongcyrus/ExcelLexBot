@@ -20,6 +20,9 @@ https://aws.amazon.com/jp/blogs/news/build-an-amazon-lex-chatbot-with-microsoft-
 
 https://aws.amazon.com/cn/blogs/china/build-an-amazon-lex-chatbot-with-microsoft-excel/
 
+## Deployment with AWS Serverless Application Repository
+Search "ExcelLexBot" and deploy it with one click!
+
 ## Deployment has been updated!
 
 It needs to AWS SAM deploy.
