@@ -5,6 +5,7 @@ import os
 
 import boto3
 import time
+import random 
 
 from converter.BotJsonConverter import BotJsonConverter
 from converter.IntentConverter import IntentConverter
@@ -30,22 +31,29 @@ class BotBuilder:
 
     @staticmethod
     def __delete_lex_component(name: str, func):
-        try:
-            response = func(name=name)
-            print(response)
-        except Exception as e:
-            print("Cannot Delete" + name)
-            print(e)
+        trial = 0
+        while trial < 3:
+            try:
+                response = func(name=name)
+                print(response)
+                return
+            except Exception as e:
+                print("Cannot Delete " + name)
+                print(e)
+                trial = trial + 1
+                print("trial:" + str(trial))
+                time.sleep(random.randint(30, 60))
 
     def deploy_bot(self):
+        time.sleep(random.randint(0, 5))
         list(
             map((lambda x: self.__build_lex_component(
                 x, self.client.put_slot_type)), self.botJConverter.slot_types))
-        time.sleep(2)
+        time.sleep(random.randint(2, 5))
         list(
             map((lambda x: self.__build_lex_component(
                 x, self.client.put_intent)), self.botJConverter.intents))
-        time.sleep(5)
+        time.sleep(random.randint(5, 10))
         list(
             map((lambda x: self.__build_lex_component(x, self.client.put_bot)),
                 self.botJConverter.bots))
@@ -57,15 +65,16 @@ class BotBuilder:
         self.botJConverter.generate_json()
 
     def undeploy_bot(self):
+        time.sleep(random.randint(0, 10))
         for bot in self.botJConverter.bots:
             self.__delete_lex_component(bot, self.client.delete_bot)
-            time.sleep(10)
+            time.sleep(30)
         for intend in self.botJConverter.intents:
             self.__delete_lex_component(intend, self.client.delete_intent)
-            time.sleep(5)
+            time.sleep(random.randint(2, 5))
         for slot in self.botJConverter.slot_types:
             self.__delete_lex_component(slot, self.client.delete_slot_type)
-            time.sleep(5)
+            time.sleep(random.randint(2, 5))
 
 
 if __name__ == "__main__":
