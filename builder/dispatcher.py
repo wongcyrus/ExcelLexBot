@@ -94,9 +94,11 @@ def publish_to_sns(intend: str, event: dict, aws_account_id: str):
 def get_save_data(event):
     data = event['currentIntent']['slots'].copy()
     data["createAt"] = str(datetime.datetime.now())
-    data["userId"] = event["sessionAttributes"]["userId"] if "userId" in event[
-        'sessionAttributes'] else event["userId"]
-    data["sessionAttributes"] = event['sessionAttributes'].copy()
+    data["userId"] = event["sessionAttributes"]["userId"] if event[
+        "sessionAttributes"] is not None and "userId" in event[
+            'sessionAttributes'] else event["userId"]
+    if event["sessionAttributes"] is not None:
+        data["sessionAttributes"] = event['sessionAttributes'].copy()
     return data
 
 

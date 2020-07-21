@@ -19,7 +19,7 @@ Metadata:
     ReadmeUrl: README.md
     Labels: ['Lex']
     HomePageUrl: https://github.com/wongcyrus/ExcelLexBot
-    SemanticVersion: 0.0.1
+    SemanticVersion: 0.0.2
     SourceCodeUrl: https://github.com/wongcyrus/ExcelLexBot   
 Resources:
   ExcelLexBotS3TriggerFunction:
