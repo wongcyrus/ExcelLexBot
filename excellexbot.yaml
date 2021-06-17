@@ -4,7 +4,7 @@ Description: Upload Excel xlsx to S3 and trigger Excel Lex Bot
 Parameters:
   DynamodbAutoScaling:
     Type: String
-    Default: true
+    Default: false
     AllowedValues:
       - true
       - false
@@ -19,7 +19,7 @@ Metadata:
     ReadmeUrl: README.md
     Labels: ['Lex']
     HomePageUrl: https://github.com/wongcyrus/ExcelLexBot
-    SemanticVersion: 0.0.2
+    SemanticVersion: 0.0.3
     SourceCodeUrl: https://github.com/wongcyrus/ExcelLexBot   
 Resources:
   ExcelLexBotS3TriggerFunction:
