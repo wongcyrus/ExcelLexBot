@@ -39,7 +39,7 @@ Resources:
         - AmazonLexFullAccess
         - AmazonSNSFullAccess
         - AmazonDynamoDBFullAccess
-        - AWSLambdaFullAccess
+        - AWSLambda_FullAccess
         - Version: 2012-10-17
           Statement:
             - Effect: Allow
